@@ -122,8 +122,6 @@ def fetch_daily(
         print(minute_df)
 
     :param ticker: string ticker to fetch
-    :param backfill_date: optional - date string formatted
-        ``YYYY-MM-DD`` for filling in missing minute data
     :param work_dict: dictionary of args
         used by the automation
     :param scrub_mode: optional - string
@@ -131,41 +129,19 @@ def fetch_daily(
     :param verbose: optional - bool to log for debugging
     """
     label = None
-    use_date = backfill_date
-    from_historical_date = None
-    last_close_to_use = None
-    dates = []
 
     if work_dict:
-        label = work_dict.get('label', None)
-        use_date = work_dict.get('use_date', None)
         if not ticker:
             ticker = work_dict.get('ticker', None)
-        if not backfill_date:
-            use_date = work_dict.get('backfill_date', None)
-        if 'from_historical_date' in work_dict:
-            from_historical_date = work_dict['from_historical_date']
-        if 'last_close_to_use' in work_dict:
-            last_close_to_use = work_dict['last_close_to_use']
-        if from_historical_date and last_close_to_use:
-            dates = ae_utils.get_days_between_dates(
-                from_historical_date=work_dict['from_historical_date'],
-                last_close_to_use=last_close_to_use)
+        label = work_dict.get('label', None)
 
     use_url = (
         f'v1/bars/1D?symbols={ticker}')
 
-    if use_date:
-        use_url = (
-            f'v1/bars/1D?symbols={ticker}&start={use_date}T09:30:00-04:00')
-
     if verbose:
         log.info(
             f'{label} - minute - url={use_url} '
-            f'req={work_dict} ticker={ticker} '
-            f'fhdate={from_historical_date} '
-            f'last_close={last_close_to_use} '
-            f'dates={dates}')
+            f'req={work_dict} ticker={ticker} ')
 
     resp_json = alpaca_helpers.get_from_alpaca(
         url=use_url,
@@ -184,7 +160,7 @@ def fetch_daily(
     if 'datetime' not in df:
         log.error(
             f'unable to download Alpaca minute '
-            f'data for {ticker} on backfill_date={use_date} '
+            f'data for {ticker} '
             f'df: {df} from url: {use_url} with response: {resp_json}')
         return df
 
