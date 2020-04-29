@@ -153,11 +153,11 @@ def fetch_daily(
                 last_close_to_use=last_close_to_use)
 
     use_url = (
-        f'/v1/bars/1D?symbols={ticker}')
+        f'v1/bars/1D?symbols={ticker}')
 
     if use_date:
         use_url = (
-            f'/v1/bars/1D?symbols={ticker}&start={use_date}T09:30:00-04:00')
+            f'v1/bars/1D?symbols={ticker}&start={use_date}T09:30:00-04:00')
 
     if verbose:
         log.info(
@@ -257,11 +257,11 @@ def fetch_minute(
                 last_close_to_use=last_close_to_use)
 
     use_url = (
-        f'/v1/bars/1Min?symbols={ticker}')
+        f'v1/bars/1Min?symbols={ticker}')
 
     if use_date:
         use_url = (
-            f'/v1/bars/1Min?symbols={ticker}&start={use_date}T09:30:00-04:00')
+            f'v1/bars/1Min?symbols={ticker}&start={use_date}T09:30:00-04:00')
 
     if verbose:
         log.info(
@@ -342,7 +342,7 @@ def fetch_quote(
         label = work_dict.get('label', None)
 
     use_url = (
-        f'/v1/last_quote/stocks/{ticker}')
+        f'v1/last_quote/stocks/{ticker}')
 
     if verbose:
         log.info(
@@ -423,7 +423,7 @@ def fetch_news(
             num_news = int(work_dict.get('num_news', 5))
 
     use_url = (
-        f'/v1/meta/symbols/{ticker}/news')
+        f'v1/meta/symbols/{ticker}/news')
 
     if verbose:
         log.info(
@@ -507,7 +507,7 @@ def fetch_financials(
         label = work_dict.get('label', None)
 
     use_url = (
-        f'/v2/reference/financials/{ticker}')
+        f'v2/reference/financials/{ticker}')
 
     if verbose:
         log.info(
@@ -582,7 +582,7 @@ def fetch_earnings(
         label = work_dict.get('label', None)
 
     use_url = (
-        f'/v1/meta/symbols/{ticker}/earnings')
+        f'v1/meta/symbols/{ticker}/earnings')
 
     if verbose:
         log.info(
@@ -663,7 +663,7 @@ def fetch_dividends(
             timeframe = work_dict.get('timeframe', '3m')
 
     use_url = (
-        f'/v2/reference/dividends/{ticker}')
+        f'v2/reference/dividends/{ticker}')
 
     if verbose:
         log.info(
@@ -738,7 +738,7 @@ def fetch_company(
         label = work_dict.get('label', None)
 
     use_url = (
-        f'/v1/meta/symbols/{ticker}/company')
+        f'v1/meta/symbols/{ticker}/company')
 
     if verbose:
         log.info(
