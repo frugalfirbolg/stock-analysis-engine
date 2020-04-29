@@ -412,7 +412,7 @@ def fetch_news(
         verbose=verbose)
 
     df = pd.DataFrame(resp_json)
-
+    
     if verbose:
         log.info(
             f'{label} - news - url={use_url} '
@@ -422,17 +422,12 @@ def fetch_news(
     if len(df.index) == 0:
         return df
 
-    if 'datetime' not in df:
+    if 'timestamp' not in df:
         log.error(
-            f'unable to download IEX Cloud news '
+            f'unable to download Polygon news '
             f'data for {ticker} '
             f'df: {df} from url: {use_url} with response: {resp_json}')
         return df
-
-    df['datetime'] = pd.to_datetime(
-        df['datetime'],
-        unit='ms',
-        errors='coerce')
 
     cols_to_drop = []
     remove_these = None
