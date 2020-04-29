@@ -495,7 +495,7 @@ def fetch_financials(
         token=alpaca_consts.POLYGON_TOKEN,
         verbose=verbose)
 
-    df = pd.DataFrame(resp_json.get('results'))
+    df = pd.DataFrame(resp_json.get('results')).set_index('updated')
 
     if verbose:
         log.info(
@@ -523,81 +523,6 @@ def fetch_financials(
 
     return df
 # end of fetch_financials
-
-
-def fetch_earnings(
-        ticker=None,
-        work_dict=None,
-        scrub_mode='sort-by-date',
-        verbose=False):
-    """fetch_earnings
-
-    Fetch the Polygon earnings data for a ticker and
-    return it as a ``pandas.DataFrame``.
-
-    https://polygon.io/docs/#get_v1_meta_symbols__symbol__company_anchor
-
-    .. code-block:: python
-
-        import analysis_engine.alpaca.fetch_api as alpaca_fetch
-
-        earn_df = alpaca_fetch.fetch_earnings(ticker='SPY')
-        print(earn_df)
-
-    :param ticker: string ticker to fetch
-    :param work_dict: dictionary of args
-        used by the automation
-    :param scrub_mode: optional - string
-        type of scrubbing handler to run
-    :param verbose: optional - bool to log for debugging
-    """
-    label = None
-    if work_dict:
-        if not ticker:
-            ticker = work_dict.get('ticker', None)
-        label = work_dict.get('label', None)
-
-    use_url = (
-        f'v1/meta/symbols/{ticker}/earnings')
-
-    if verbose:
-        log.info(
-            f'{label} - earns - url={use_url} '
-            f'req={work_dict} ticker={ticker}')
-
-    resp_json = alpaca_helpers.get_from_polygon(
-        url=use_url,
-        token=alpaca_consts.POLYGON_TOKEN,
-        verbose=verbose)
-
-    df = pd.DataFrame(resp_json)
-
-    if verbose:
-        log.info(
-            f'{label} - earns - url={use_url} '
-            f'ticker={ticker} response '
-            f'df={df.tail(5)}')
-
-    if len(df.index) == 0:
-        return df
-
-    alpaca_helpers.convert_datetime_columns(
-        df=df)
-
-    cols_to_drop = []
-    remove_these = None
-    if len(cols_to_drop) > 0:
-        for c in df:
-            if c in cols_to_drop:
-                if not remove_these:
-                    remove_these = []
-                remove_these.append(c)
-
-    if remove_these:
-        df = df.drop(columns=remove_these)
-
-    return df
-# end of fetch_earnings
 
 
 def fetch_dividends(
@@ -651,7 +576,7 @@ def fetch_dividends(
         token=alpaca_consts.POLYGON_TOKEN,
         verbose=verbose)
 
-    df = pd.DataFrame(resp_json)
+    df = pd.DataFrame(resp_json.get('results'))
 
     if verbose:
         log.info(

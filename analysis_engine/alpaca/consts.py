@@ -127,7 +127,11 @@ ALPACA_DATE_FIELDS = [
     'calendarDate',
     'reportPeriod',
     'updated',
-    'date']
+    'date',
+    'exDate',
+    'declaredDate',
+    'paymentDate',
+    'recordDate']
 ALPACA_TIME_FIELDS = [
     'closeTime',
     'close.time',
