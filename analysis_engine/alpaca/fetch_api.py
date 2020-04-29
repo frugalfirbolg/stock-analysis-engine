@@ -726,7 +726,7 @@ def fetch_company(
         token=alpaca_consts.POLYGON_TOKEN,
         verbose=verbose)
 
-    df = pd.DataFrame(resp_json)
+    df = pd.DataFrame([resp_json])
 
     if verbose:
         log.info(

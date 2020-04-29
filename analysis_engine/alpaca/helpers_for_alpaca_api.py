@@ -142,8 +142,8 @@ def get_from_polygon(
                 f'{proxy_str}'
                 f'status_code={resp.status_code} '
                 f'data={ae_consts.ppj(res_data)}')
-            return res_data
-        raise Exception(
+        return res_data
+    raise Exception(
         f'Failed to get data from Polygon with '
         f'function=get_from_polygon '
         f'url={url} which sent '
