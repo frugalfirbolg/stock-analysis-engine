@@ -136,7 +136,7 @@ def fetch_daily(
         label = work_dict.get('label', None)
 
     use_url = (
-        f'v1/bars/1D?symbols={ticker}')
+        f'/bars/1D?symbols={ticker}')
 
     if verbose:
         log.info(
@@ -233,11 +233,11 @@ def fetch_minute(
                 last_close_to_use=last_close_to_use)
 
     use_url = (
-        f'v1/bars/1Min?symbols={ticker}')
+        f'bars/1Min?symbols={ticker}')
 
     if use_date:
         use_url = (
-            f'v1/bars/1Min?symbols={ticker}&start={use_date}T09:30:00-04:00')
+            f'bars/1Min?symbols={ticker}&start={use_date}T09:30:00-04:00')
 
     if verbose:
         log.info(
@@ -252,7 +252,7 @@ def fetch_minute(
         token=alpaca_consts.ALPACA_TOKEN,
         verbose=verbose)
 
-    df = pd.DataFrame(resp_json[ticker])
+    df = pd.DataFrame(resp_json.get(ticker))
     df.columns = ['close', 'high', 'low', 'open', 'datetime', 'volume']
 
     if verbose:
@@ -318,7 +318,7 @@ def fetch_quote(
         label = work_dict.get('label', None)
 
     use_url = (
-        f'v1/last_quote/stocks/{ticker}')
+        f'last_quote/stocks/{ticker}')
 
     if verbose:
         log.info(

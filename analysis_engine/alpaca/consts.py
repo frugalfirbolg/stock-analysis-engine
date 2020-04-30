@@ -12,10 +12,14 @@ Polygon Token can be Alpaca Token.
         'v1')
     ALPACA_URL_BASE = os.getenv(
         'ALPACA_URL',
-        f'https://paper-api.alpaca.markets/{ALPACA_API_VERSION}')
+        f'https://data.alpaca.markets/{ALPACA_API_VERSION}')
     ALPACA_TOKEN = os.getenv(
         'ALPACA_TOKEN',
         None)
+    ALPACA_SECRET = os.getenv(
+        'ALPACA_SECRET',
+        None
+    )
     ALPACA_PROXIES = os.getenv(
         'ALPACA_PROXIES',
         None)
@@ -94,16 +98,20 @@ ALPACA_TICK_FORMAT = '%Y-%m-%d %H:%M:%S'
 IEX_FETCH_MINUTE_FORMAT = '%H:%M'
 
 # Alpaca Environment Variables
-#ALPACA_API_VERSION = os.getenv(
-#    'ALPACA_API_VERSION',
-#    'v1')
+ALPACA_API_VERSION = os.getenv(
+    'ALPACA_API_VERSION',
+    'v1')
 ALPACA_URL_BASE = os.getenv(
     'ALPACA_URL',
-    f'https://paper-api.alpaca.markets/')
-#api.alpaca.markets for live
+    f'https://data.alpaca.markets/{ALPACA_API_VERSION}')
+
 ALPACA_TOKEN = os.getenv(
     'ALPACA_TOKEN',
     None)
+ALPACA_SECRET = os.getenv(
+        'ALPACA_SECRET',
+        None
+    )
 ALPACA_PROXIES = os.getenv(
     'ALPACA_PROXIES',
     None)

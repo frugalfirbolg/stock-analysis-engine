@@ -87,7 +87,9 @@ def get_from_alpaca(
     resp = requests.get(
         url,
         proxies=alpaca_consts.ALPACA_PROXIES,
-        headers={'APCA-API-KEY-ID': token})
+        headers={
+            'APCA-API-KEY-ID': token,
+            'APCA-API-SECRET-KEY': alpaca_consts.ALPACA_SECRET})
     if resp.status_code == requests.codes.OK:
         res_data = resp.json()
         if verbose:
