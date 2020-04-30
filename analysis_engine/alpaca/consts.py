@@ -151,10 +151,11 @@ ALPACA_TIME_FIELDS = [
     'open.time'
     'processedTime',
     'time',
-    'timestamp',
     'lastUpdated']
-ALPACA_EPOCH_FIELDS = [
+ALPACA_EPOCH_FIELDS = []
+ALPACA_SEC_EPOCH_FIELDS = [
     't',
+    'timestamp'
     'datetime'
 ]
 ALPACA_SECOND_FIELDS = []

@@ -16,6 +16,7 @@ def convert_datetime_columns(
         df,
         date_cols=None,
         second_cols=None,
+        scols=None,
         tcols=None,
         ecols=None):
     """convert_datetime_columns
@@ -28,6 +29,8 @@ def convert_datetime_columns(
         formatted: ``YYYY-MM-DD``
     :param second_cols: list of columns to convert with a date string format
         formatted: ``YYYY-MM-DD HH:MM:SS``
+    :param scols: list of columns to convert with a time format
+        (this is for seconds epoch integers)
     :param tcols: list of columns to convert with a time format
         (this is for millisecond epoch integers)
     :param ecols: list of columns to convert with a time format
@@ -35,6 +38,7 @@ def convert_datetime_columns(
     """
     date_cols = date_cols or alpaca_consts.ALPACA_DATE_FIELDS
     second_cols = second_cols or alpaca_consts.ALPACA_SECOND_FIELDS
+    scols = scols or alpaca_consts.ALPACA_SEC_EPOCH_FIELDS
     tcols = tcols or alpaca_consts.ALPACA_TIME_FIELDS
     ecols = ecols or alpaca_consts.ALPACA_EPOCH_FIELDS
 
@@ -50,6 +54,13 @@ def convert_datetime_columns(
             df[col] = pd.to_datetime(
                 df[col],
                 format=alpaca_consts.ALPACA_TICK_FORMAT,
+                errors='coerce')
+    
+    for scol in scols:
+        if scol in df:
+            df[scol] = pd.to_datetime(
+                df[scol],
+                unit='s',
                 errors='coerce')
 
     for tcol in tcols:

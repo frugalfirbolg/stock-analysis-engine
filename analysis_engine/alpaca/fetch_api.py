@@ -3,10 +3,6 @@ Fetch API calls for pulling data from
 a valid Alpaca account, which in turn pulls from
 Polygon and other sources.
 
-.. warning:: Running these API calls will impact
-    your account's monthly quota. Please be
-    aware of your usage when calling these.
-
 Please set the environment variable ``ALPACA_TOKEN`` to
 your public account token before running these calls.
 
@@ -173,11 +169,10 @@ def fetch_daily(
     # make sure dates are set as strings in the cache
     df['datetime'] = df['datetime'].dt.strftime(
         ae_consts.COMMON_TICK_DATE_FORMAT)
-    df.set_index(
+    return df.set_index(
         [
             'datetime'
         ])
-    return df
 # end of fetch_daily
 
 
@@ -233,11 +228,11 @@ def fetch_minute(
                 last_close_to_use=last_close_to_use)
 
     use_url = (
-        f'bars/1Min?symbols={ticker}')
+        f'/bars/1Min?symbols={ticker}')
 
     if use_date:
         use_url = (
-            f'bars/1Min?symbols={ticker}&start={use_date}T09:30:00-04:00')
+            f'/bars/1Min?symbols={ticker}&start={use_date}T09:30:00-04:00')
 
     if verbose:
         log.info(
@@ -277,11 +272,10 @@ def fetch_minute(
     # make sure dates are set as strings in the cache
     df['datetime'] = df['datetime'].dt.strftime(
         ae_consts.COMMON_TICK_DATE_FORMAT)
-    df.set_index(
+    return df.set_index(
         [
             'datetime'
         ])
-    return df
 # end of fetch_minute
 
 
@@ -318,7 +312,7 @@ def fetch_quote(
         label = work_dict.get('label', None)
 
     use_url = (
-        f'last_quote/stocks/{ticker}')
+        f'/last_quote/stocks/{ticker}')
 
     if verbose:
         log.info(
