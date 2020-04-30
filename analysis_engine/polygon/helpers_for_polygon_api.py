@@ -111,7 +111,7 @@ def get_from_polygon(
                 proxy_str = (
                     f'proxies={polygon_consts.POLYGON_PROXIES}')
             log.info(
-                f'POLYGONAPI - response data for '
+                f'POLYGON API - response data for '
                 f'url={url.replace(token, "REDACTED")} '
                 f'{proxy_str}'
                 f'status_code={resp.status_code} '

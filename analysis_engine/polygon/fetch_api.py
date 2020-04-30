@@ -169,7 +169,9 @@ def fetch_tickers(
             f'from url: {use_url} with response: {resp_json}')
         return
     
-    max_page = min(ceil(first_page_json.get('count') / first_page_json.get('perPage')), end_page)
+    max_page = ceil(first_page_json.get('count') / first_page_json.get('perPage'))
+    if end_page:
+        max_page = min(end_page, max_page)
 
     tickers = first_page_json.get('tickers')
     
