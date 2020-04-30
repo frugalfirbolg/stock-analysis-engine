@@ -13,6 +13,7 @@ import pandas as pd
 import analysis_engine.consts as ae_consts
 import analysis_engine.utils as ae_utils
 import analysis_engine.iex.consts as iex_consts
+import analysis_engine.polygon.consts as polygon_consts
 import analysis_engine.td.consts as td_consts
 import analysis_engine.options_dates as opt_dates
 
@@ -921,6 +922,389 @@ def build_iex_fetch_company_request(
     return work
 # end of build_iex_fetch_company_request
 
+
+"""
+Polygon API Requests
+"""
+
+
+def build_polygon_fetch_daily_request(
+        label=None):
+    """build_polygon_fetch_daily_request
+
+    Fetch `daily
+    data <https://polygon.io>`__
+    from Polygon
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_daily_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.DAILY_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_DAILY,
+        'fd_type': polygon_consts.DATAFEED_DAILY,
+        'ticker': ticker,
+        'timeframe': '5y',
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_daily_request
+
+
+def build_polygon_fetch_minute_request(
+        label=None):
+    """build_polygon_fetch_minute_request
+
+    Fetch `minute
+    data <https://iexcloud.io/docs/api/#historical-prices>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_minute_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.MINUTE_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_MINUTE,
+        'fd_type': polygon_consts.DATAFEED_MINUTE,
+        'ticker': ticker,
+        'timeframe': '1d',
+        'last_close': None,
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_minute_request
+
+
+def build_polygon_fetch_quote_request(
+        label=None):
+    """build_polygon_fetch_quote_request
+
+    Fetch `quote
+    data <https://iexcloud.io/docs/api/#quote>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_quote_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.QUOTE_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_QUOTE,
+        'fd_type': polygon_consts.DATAFEED_QUOTE,
+        'ticker': ticker,
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_quote_request
+
+
+def build_polygon_fetch_stats_request(
+        label=None):
+    """build_polygon_fetch_stats_request
+
+    Fetch `stats
+    data <https://iexcloud.io/docs/api/#key-stats>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_stat_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.STATS_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_STATS,
+        'fd_type': polygon_consts.DATAFEED_STATS,
+        'ticker': ticker,
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_stats_request
+
+
+def build_polygon_fetch_peers_request(
+        label=None):
+    """build_polygon_fetch_peers_request
+
+    Fetch `peers
+    data <https://iexcloud.io/docs/api/#peers>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_peer_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.PEERS_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_PEERS,
+        'fd_type': polygon_consts.DATAFEED_PEERS,
+        'ticker': ticker,
+        'timeframe': '1d',
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_peers_request
+
+
+def build_polygon_fetch_news_request(
+        label=None):
+    """build_polygon_fetch_news_request
+
+    Fetch `news
+    data <https://iexcloud.io/docs/api/#news>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_news_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.NEWS_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_NEWS,
+        'fd_type': polygon_consts.DATAFEED_NEWS,
+        'ticker': ticker,
+        'timeframe': '1d',
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_news_request
+
+
+def build_polygon_fetch_financials_request(
+        label=None):
+    """build_polygon_fetch_financials_request
+
+    Fetch `financials
+    data <https://iexcloud.io/docs/api/#financials>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_financial_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.FINANCIALS_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_FINANCIALS,
+        'fd_type': polygon_consts.DATAFEED_FINANCIALS,
+        'ticker': ticker,
+        'timeframe': '1d',
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_financials_request
+
+
+def build_polygon_fetch_earnings_request(
+        label=None):
+    """build_polygon_fetch_earnings_request
+
+    Fetch `earnings
+    data <https://iexcloud.io/docs/api/#earnings>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_earning_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.EARNINGS_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_EARNINGS,
+        'fd_type': polygon_consts.DATAFEED_EARNINGS,
+        'ticker': ticker,
+        'timeframe': '1d',
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_earnings_request
+
+
+def build_polygon_fetch_dividends_request(
+        label=None):
+    """build_polygon_fetch_dividends_request
+
+    Fetch `dividends
+    data <https://iexcloud.io/docs/api/#dividends>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_dividend_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.DIVIDENDS_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_DIVIDENDS,
+        'fd_type': polygon_consts.DATAFEED_DIVIDENDS,
+        'ticker': ticker,
+        'timeframe': '2y',
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_dividends_request
+
+
+def build_polygon_fetch_company_request(
+        label=None):
+    """build_polygon_fetch_company_request
+
+    Fetch `company
+    data <https://iexcloud.io/docs/api/#company>`__
+    from IEX
+
+    :param label: log label to use
+    """
+    ticker = ae_consts.TICKER
+    base_key = f'''{ticker}_company_{datetime.datetime.utcnow().strftime(
+        '%Y_%m_%d_%H_%M_%S')}'''
+    s3_bucket_name = ae_consts.COMPANY_S3_BUCKET_NAME
+    s3_key = base_key
+    redis_key = base_key
+    s3_enabled = True
+    redis_enabled = True
+
+    work = {
+        'ft_type': polygon_consts.FETCH_COMPANY,
+        'fd_type': polygon_consts.DATAFEED_COMPANY,
+        'ticker': ticker,
+        'timeframe': '1d',
+        's3_bucket': s3_bucket_name,
+        's3_key': s3_key,
+        'redis_key': redis_key,
+        's3_enabled': s3_enabled,
+        'redis_enabled': redis_enabled
+    }
+
+    if label:
+        work['label'] = label
+
+    return work
+# end of build_polygon_fetch_company_request
 
 def build_screener_analysis_request(
         ticker=None,

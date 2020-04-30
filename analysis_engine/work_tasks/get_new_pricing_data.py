@@ -577,6 +577,7 @@ def get_new_pricing_data(
                         f'{label} failed Polygon ticker={ticker} '
                         f'field={dataset_field} '
                         f'status={status_str} err={polygon_res["err"]}')
+        # end of if get_polygon_data
 
         if get_iex_data:
             num_iex_ds = len(iex_datasets)
