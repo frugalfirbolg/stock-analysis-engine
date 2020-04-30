@@ -180,6 +180,9 @@ def get_new_pricing_data(
         iex_datasets = work_dict.get(
             'iex_datasets',
             iex_consts.DEFAULT_FETCH_DATASETS)
+        polygon_datasets = work_dict.get(
+            'polygon_datasets',
+            polygon_consts.DEFAULT_FETCH_DATASETS)
         td_datasets = work_dict.get(
             'td_datasets',
             td_consts.DEFAULT_FETCH_DATASETS_TD)
@@ -243,6 +246,20 @@ def get_new_pricing_data(
             get_iex_data = True
             get_td_data = False
             iex_datasets = ae_consts.IEX_INTRADAY_DATASETS
+        elif (
+                fetch_mode == ae_consts.FETCH_MODE_POLYGON
+                or str_fetch_mode == 'polygon-all'):
+            get_polygon_data = True
+            get_iex_data = False
+            get_td_data = False
+            polygon_datasets = ae_consts.POLYGON_DATASETS_DEFAULT
+        elif (
+                fetch_mode == ae_consts.FETCH_MODE_POLYGON
+                or str_fetch_mode == 'polygon'):
+            get_polygon_data = True
+            get_iex_data = False
+            get_td_data = False
+            polygon_datasets = ae_consts.POLYGON_INTRADAY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_INTRADAY
                 or str_fetch_mode == 'intra'):
@@ -313,6 +330,10 @@ def get_new_pricing_data(
                         polygon_datasets.append('company')
                     elif fetch_name == 'polygon_comp':
                         polygon_datasets.append('company')
+                    else:
+                        log.warn(
+                            'unsupported Polygon dataset '
+                            f'{fetch_name}')
                 if fetch_name not in iex_datasets:
                     if fetch_name == 'iex_min':
                         iex_datasets.append('minute')
@@ -364,8 +385,7 @@ def get_new_pricing_data(
                         log.warn(
                             'unsupported IEX dataset '
                             f'{fetch_name}')
-            found_fetch = (
-                len(iex_datasets) != 0) or (len(polygon_datasets) != 0)
+            found_fetch = (len(iex_datasets) != 0) or (len(polygon_datasets) != 0)
             if not found_fetch:
                 log.error(
                     f'{label} - unsupported '
@@ -403,7 +423,7 @@ def get_new_pricing_data(
                 get_polygon_data = False
             else:
                 num_tokens += 1
-        
+        # sanity check - disable Polygon fetch if the token is not set
         if get_iex_data:
             if not iex_token:
                 log.warn(

@@ -7,6 +7,7 @@ import json
 import analysis_engine.consts as ae_consts
 import analysis_engine.utils as ae_utils
 import analysis_engine.iex.consts as iex_consts
+import analysis_engine.polygon.consts as polygon_consts
 import analysis_engine.work_tasks.get_new_pricing_data as price_utils
 import analysis_engine.polygon.extract_df_from_redis as polygon_extract_utils
 import analysis_engine.iex.extract_df_from_redis as iex_extract_utils
@@ -179,13 +180,32 @@ def fetch(
         'company'
     ]
 
+    default_polygon_datasets = [
+        'daily',
+        'minute',
+        'quote',
+        'news',
+        'financials',
+        'dividends',
+        'company'
+    ]
+
     use_iex_datasets = iex_consts.FETCH_DATASETS
     if len(use_iex_datasets) == 0:
         use_iex_datasets = default_iex_datasets
     if not iex_datasets:
         iex_datasets = use_iex_datasets
+    
+    use_polygon_datasets = polygon_consts.FETCH_DATASETS
+    if len(polygon_datasets) == 0:
+        use_polygon_datasets = default_polygon_datasets
+    if not polygon_datasets:
+        polygon_datasets = use_polygon_datasets
+    
     if not fetch_mode:
         fetch_mode = 'all'
+    if fetch_mode == 'polygon' or fetch_mode == 'polygon-all':
+        iex_datasets = []
 
     if redis_enabled:
         if not redis_address:
@@ -261,8 +281,8 @@ def fetch(
         fetch_req['ticker'] = ticker
         fetch_req['label'] = label
         fetch_req['fetch_mode'] = fetch_mode
-        fetch_req['polygon_datasets'] = polygon_datasets
         fetch_req['iex_datasets'] = iex_datasets
+        fetch_req['polygon_datasets'] = polygon_datasets
         fetch_req['s3_enabled'] = s3_enabled
         fetch_req['s3_bucket'] = s3_bucket
         fetch_req['s3_address'] = s3_address

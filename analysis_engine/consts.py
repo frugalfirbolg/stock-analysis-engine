@@ -419,6 +419,7 @@ FETCH_MODE_INTRADAY = 30004
 FETCH_MODE_DAILY = 30005
 FETCH_MODE_WEEKLY = 30006
 FETCH_MODE_INITIAL = 30007
+FETCH_MODE_POLYGON = 30008
 
 # GMT: Monday, January 19, 1970 12:26:40 PM
 EPOCH_MINIMUM_DATE = 1600000
@@ -609,6 +610,42 @@ IEX_INITIAL_DATASETS = [
     'daily',
     'minute',
     'stats',
+    'news',
+    'company'
+]
+
+POLYGON_DATASETS_DEFAULT = [
+    'daily',
+    'minute',
+    'quote',
+    'news',
+    'financials',
+    'earnings',
+    'company'
+]
+POLYGON_INTRADAY_DATASETS = [
+    'minute',
+    'news'
+]
+POLYGON_DAILY_DATASETS = [
+    'minute',
+    'daily',
+    'news'
+]
+POLYGON_WEEKLY_DATASETS = [
+    'minute',
+    'financials',
+    'dividends',
+    'news',
+    'company'
+]
+
+# Financial + Earnings are expensive
+# so disabled for new users just
+# getting started
+POLYGON_INITIAL_DATASETS = [
+    'daily',
+    'minute',
     'news',
     'company'
 ]
