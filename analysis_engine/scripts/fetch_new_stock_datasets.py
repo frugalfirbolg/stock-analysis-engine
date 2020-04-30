@@ -45,6 +45,7 @@ import celery
 import analysis_engine.work_tasks.get_celery_app as get_celery_app
 import analysis_engine.consts as ae_consts
 import analysis_engine.iex.consts as iex_consts
+import analysis_engine.polygon.consts as polygon_consts
 import analysis_engine.api_requests as api_requests
 import analysis_engine.work_tasks.get_new_pricing_data as task_pricing
 import analysis_engine.work_tasks.task_screener_analysis as screener_utils
@@ -565,6 +566,7 @@ def fetch_new_stock_datasets():
     work['redis_enabled'] = redis_enabled
     work['fetch_mode'] = fetch_mode
     work['analysis_type'] = analysis_type
+    work['polygon_datasets'] = polygon_consts.DEFAULT_FETCH_DATASETS
     work['iex_datasets'] = iex_consts.DEFAULT_FETCH_DATASETS
     work['backfill_date'] = backfill_date
     work['debug'] = debug
@@ -635,9 +637,10 @@ def fetch_new_stock_datasets():
                         f'"{work["ticker"]}_{cur_date}*"')
             elif task_res['status'] == ae_consts.MISSING_TOKEN:
                 print(
-                    'Set an IEX or Tradier token: '
+                    'Set an IEX, Polygon, or Tradier token: '
                     '\n'
                     '  export IEX_TOKEN=YOUR_IEX_TOKEN\n'
+                    '  export POLYGON_TOKEN=YOUR_POLYGON_TOKEN\n'
                     '  export TD_TOKEN=YOUR_TD_TOKEN\n')
             else:
                 log.error(

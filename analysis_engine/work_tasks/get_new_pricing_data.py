@@ -334,21 +334,22 @@ def get_new_pricing_data(
                         log.warn(
                             'unsupported Polygon dataset '
                             f'{fetch_name}')
+                
                 if fetch_name not in iex_datasets:
                     if fetch_name == 'iex_min':
                         iex_datasets.append('minute')
-                    elif fetch_name == 'min':
-                        iex_datasets.append('minute')
-                    elif fetch_name == 'minute':
-                        iex_datasets.append('minute')
-                    elif fetch_name == 'day':
-                        iex_datasets.append('daily')
-                    elif fetch_name == 'daily':
-                        iex_datasets.append('daily')
+                    #elif fetch_name == 'min':
+                    #    iex_datasets.append('minute')
+                    #elif fetch_name == 'minute':
+                    #    iex_datasets.append('minute')
+                    #elif fetch_name == 'day':
+                    #    iex_datasets.append('daily')
+                    #elif fetch_name == 'daily':
+                    #    iex_datasets.append('daily')
                     elif fetch_name == 'iex_day':
                         iex_datasets.append('daily')
-                    elif fetch_name == 'quote':
-                        iex_datasets.append('quote')
+                    #elif fetch_name == 'quote':
+                    #    iex_datasets.append('quote')
                     elif fetch_name == 'iex_quote':
                         iex_datasets.append('quote')
                     elif fetch_name == 'iex_stats':
@@ -359,24 +360,24 @@ def get_new_pricing_data(
                         iex_datasets.append('peers')
                     elif fetch_name == 'iex_peers':
                         iex_datasets.append('peers')
-                    elif fetch_name == 'news':
-                        iex_datasets.append('news')
+                    #elif fetch_name == 'news':
+                    #    iex_datasets.append('news')
                     elif fetch_name == 'iex_news':
                         iex_datasets.append('news')
-                    elif fetch_name == 'fin':
-                        iex_datasets.append('financials')
+                    #elif fetch_name == 'fin':
+                    #    iex_datasets.append('financials')
                     elif fetch_name == 'iex_fin':
                         iex_datasets.append('financials')
-                    elif fetch_name == 'earn':
-                        iex_datasets.append('earnings')
+                    #elif fetch_name == 'earn':
+                    #    iex_datasets.append('earnings')
                     elif fetch_name == 'iex_earn':
                         iex_datasets.append('earnings')
-                    elif fetch_name == 'div':
-                        iex_datasets.append('dividends')
+                    #elif fetch_name == 'div':
+                    #    iex_datasets.append('dividends')
                     elif fetch_name == 'iex_div':
                         iex_datasets.append('dividends')
-                    elif fetch_name == 'comp':
-                        iex_datasets.append('company')
+                    #elif fetch_name == 'comp':
+                    #    iex_datasets.append('company')
                     elif fetch_name == 'iex_comp':
                         iex_datasets.append('company')
                     elif fetch_name == 'td':
