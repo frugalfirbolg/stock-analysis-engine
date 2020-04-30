@@ -23,7 +23,7 @@ keys = {
     'dividends': polygon_consts.DATAFEED_DIVIDENDS,
     'financials': polygon_consts.DATAFEED_FINANCIALS,
     'minute': polygon_consts.DATAFEED_MINUTE,
-    'news': polygon_consts.DATAFEED_NEWS,
+    'news1': polygon_consts.DATAFEED_NEWS,
     'quote': polygon_consts.DATAFEED_QUOTE
 }
 

@@ -197,7 +197,7 @@ def fetch(
         iex_datasets = use_iex_datasets
     
     use_polygon_datasets = polygon_consts.FETCH_DATASETS
-    if len(polygon_datasets) == 0:
+    if len(use_polygon_datasets) == 0:
         use_polygon_datasets = default_polygon_datasets
     if not polygon_datasets:
         polygon_datasets = use_polygon_datasets
