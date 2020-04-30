@@ -371,7 +371,7 @@ def get_new_pricing_data(
                     f'{label} - unsupported '
                     f'fetch_mode={fetch_mode} value')
             else:
-                get_polygon_data = (len(polygon_datasets) != 0)
+                get_polygon_data = len(polygon_datasets) != 0
                 if get_polygon_data:
                     log.debug(
                         f'{label} - '
@@ -379,7 +379,7 @@ def get_new_pricing_data(
                         f'{polygon_datasets} '
                         f'fetch_mode={fetch_mode}')
                 
-                get_iex_data = len(iex_datasets) != 0)
+                get_iex_data = len(iex_datasets) != 0
                 if get_iex_data:
                     log.debug(
                         f'{label} - '
