@@ -114,12 +114,12 @@ POLYGON_TIME_FIELDS = [
     'openTime',
     'open.time'
     'processedTime',
+    't',
     'time',
+    'timestamp',
     'lastUpdated']
 POLYGON_EPOCH_FIELDS = []
 POLYGON_SEC_EPOCH_FIELDS = [
-    't',
-    'timestamp',
     'datetime'
 ]
 POLYGON_SECOND_FIELDS = []

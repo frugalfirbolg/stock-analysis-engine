@@ -101,11 +101,14 @@ log = log_utils.build_colorized_logger(name=__name__)
 
 def fetch_tickers(
     locale='us',
+    start_page=1,
+    end_page=None,
     work_dict=None,
     verbose=False):
     """fetch_tickers
 
     Fetch the stock tickers supported by Polygon and return it as a list.
+    This request can take a very long time.
 
     https://polygon.io/docs/#get_v2_reference_tickers_anchor
 
@@ -117,6 +120,8 @@ def fetch_tickers(
         print(tickers)
     
     :param locale: optional - string to filter results, 'us' or 'g' for example
+    :param start_page: optional - integer page to start on
+    :param end_page: optional - integer page to end on
     :param work_dict: dictionary of args
         used by the automation
     :param verbose: optional - bool to log for debugging
@@ -133,8 +138,15 @@ def fetch_tickers(
         label = work_dict.get('label', None)
         if work_dict.get('locale'):
             query_params = work_dict.get('locale')
+        
+        query_params['page'] = work_dict.get('start_page', start_page)
+        if end_page is None:
+            end_page = work_dict.get('end_page', None)
+    
     if locale:
-        query_params.locale = locale
+        query_params['locale'] = locale
+    if start_page:
+        query_params['page'] = start_page
     
     use_url = (
         f'/v2/reference/tickers')
@@ -150,25 +162,38 @@ def fetch_tickers(
         token=polygon_consts.POLYGON_TOKEN,
         verbose=verbose)
     
-    max_page = ceil(first_page_json.get('count') / first_page_json.get('perPage'))
+    if 'count' not in first_page_json:
+        log.error(
+            f'unable to download Polygon tickers '
+            f'on page {query_params.page} '
+            f'from url: {use_url} with response: {resp_json}')
+        return
+    
+    max_page = min(ceil(first_page_json.get('count') / first_page_json.get('perPage')), end_page)
 
     tickers = first_page_json.get('tickers')
-
+    
     for page in range(1, max_page):
-        query_params.page = page
+        query_params['page'] = page
         resp_json = polygon_helpers.get_from_polygon(
             url=use_url,
             query_params=query_params,
             token=polygon_consts.POLYGON_TOKEN,
             verbose=verbose)
+        if 'count' not in first_page_json:
+            log.error(
+                f'unable to download Polygon tickers '
+                f'on page {query_params.page} '
+                f'from url: {use_url} with response: {resp_json}')
+            continue
         tickers += resp_json.get('tickers')
-    
+
 
     df = pd.DataFrame(tickers)
-    # TODO Indexing?
+    
     polygon_helpers.convert_datetime_columns(
         df=df)
-    return df
+    return df.set_index('ticker')
 # end of fetch_tickers
 
 
@@ -408,8 +433,8 @@ def fetch_quote(
         url=use_url,
         token=polygon_consts.POLYGON_TOKEN,
         verbose=verbose)
-
-    df = pd.DataFrame(resp_json['last'])
+    
+    df = pd.DataFrame([resp_json['last']])
     if verbose:
         log.info(
             f'{label} - quote - url={use_url} '
@@ -425,10 +450,10 @@ def fetch_quote(
 
     if len(df.index) == 0:
         return df
-
+    
     polygon_helpers.convert_datetime_columns(
         df=df)
-
+    
     cols_to_drop = []
     remove_these = None
     if len(cols_to_drop) > 0:
@@ -441,7 +466,7 @@ def fetch_quote(
     if remove_these:
         df = df.drop(columns=remove_these)
 
-    return df
+    return df.set_index('timestamp')
 # end of fetch_quote
 
 
