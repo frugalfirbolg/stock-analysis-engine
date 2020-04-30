@@ -74,6 +74,7 @@ setup(
         'trading algorithms. Automated '
         'pricing data ingestion from: '
         'IEX Cloud (https://iexcloud.io), '
+        'Polygon (https://polygon.io), '
         'Tradier (https://tradier.com) and '
         'FinViz. Datasets and trading '
         'performance automatically compressed and published '
