@@ -474,19 +474,20 @@ def get_new_pricing_data(
             if num_tokens == 0:
                 res['status'] = ae_consts.MISSING_TOKEN
                 err = (
-                    f'Please set valid polygon_TOKEN and polygon_SECRET,'
+                    f'Please set valid POLYGON_TOKEN,'
                     ' IEX_TOKEN or TD_TOKEN environment variables')
             else:
                 err = (
                     f'Please set at least one supported datafeed from '
                     f'either: '
-                    f'polygon (fetch -t TICKER -g polygon) or '
+                    f'Polygon (fetch -t TICKER -g polygon) or '
                     f'IEX Cloud (fetch -t TICKER -g iex) or '
                     f'Tradier (fetch -t TICKER -g td) '
                     f'for '
                     f'ticker={ticker} '
                     f'cur_date={cur_date} '
                     f'IEX enabled={get_iex_data} '
+                    f'Polygon enabled={get_polygon_data} '
                     f'TD enabled={get_td_data} '
                     f'YHO enabled={get_yahoo_data}')
                 res['status'] = ae_consts.ERR
@@ -508,7 +509,7 @@ def get_new_pricing_data(
         log.debug(
             f'{label} getting pricing for ticker={ticker} '
             f'cur_date={cur_date} exp_date={exp_date} '
-            f'polygon={get_polygon_data}'
+            f'Polygon={get_polygon_data}'
             f'IEX={get_iex_data} '
             f'TD={get_td_data} '
             f'YHO={get_yahoo_data}')
@@ -559,7 +560,7 @@ def get_new_pricing_data(
         if get_polygon_data:
             num_polygon_ds = len(polygon_datasets)
             log.debug(f'{label} Polygon datasets={num_polygon_ds}')
-            for idx, ft_type in enumerate(iex_datasets):
+            for idx, ft_type in enumerate(polygon_datasets):
                 dataset_field = polygon_consts.get_ft_str(
                     ft_type=ft_type)
 
