@@ -98,7 +98,7 @@ def get_from_polygon(
     url = (
         f'{polygon_consts.POLYGON_URL}{url}?apiKey={token}')
     if query_params:
-        for param_name, param_value in query_params:
+        for param_name, param_value in query_params.items():
             url += f'&{param_name}={param_value}'
     resp = requests.get(
         url,
