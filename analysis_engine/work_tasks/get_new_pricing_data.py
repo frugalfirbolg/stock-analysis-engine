@@ -84,6 +84,7 @@ import analysis_engine.options_dates as opt_dates
 import analysis_engine.work_tasks.publish_pricing_update as publisher
 import analysis_engine.yahoo.get_data as yahoo_data
 import analysis_engine.iex.get_data as iex_data
+import analysis_engine.polygon.get_data as polygon_data
 import analysis_engine.td.get_data as td_data
 import analysis_engine.send_to_slack as slack_utils
 import spylunking.log.setup_logging as log_utils
@@ -277,8 +278,41 @@ def get_new_pricing_data(
             fetch_arr = str_fetch_mode.split(',')
             found_fetch = False
             iex_datasets = []
+            polygon_datasets = []
             for fetch_name in fetch_arr:
-                # TODO add polygon_datasets
+                if fetch_name not in polygon_datasets:
+                    if fetch_name == 'polygon_min':
+                        polygon_datasets.append('minute')
+                    elif fetch_name == 'min':
+                        polygon_datasets.append('minute')
+                    elif fetch_name == 'minute':
+                        polygon_datasets.append('minute')
+                    elif fetch_name == 'day':
+                        polygon_datasets.append('daily')
+                    elif fetch_name == 'daily':
+                        polygon_datasets.append('daily')
+                    elif fetch_name == 'polygon_daily':
+                        polygon_datasets.append('daily')
+                    elif fetch_name == 'quote':
+                        polygon_datasets.append('quote')
+                    elif fetch_name == 'polygon_quote':
+                        polygon_datasets.append('quote')
+                    elif fetch_name == 'news':
+                        polygon_datasets.append('news')
+                    elif fetch_name == 'polygon_news':
+                        polygon_datasets.append('news')
+                    elif fetch_name == 'fin':
+                        polygon_datasets.append('financials')
+                    elif fetch_name == 'polygon_fin':
+                        polygon_datasets.append('financials')
+                    elif fetch_name == 'div':
+                        polygon_datasets.append('dividends')
+                    elif fetch_name == 'polygon_div':
+                        polygon_datasets.append('dividends')
+                    elif fetch_name == 'comp':
+                        polygon_datasets.append('company')
+                    elif fetch_name == 'polygon_comp':
+                        polygon_datasets.append('company')
                 if fetch_name not in iex_datasets:
                     if fetch_name == 'iex_min':
                         iex_datasets.append('minute')
@@ -493,7 +527,56 @@ def get_new_pricing_data(
         # end of get from yahoo
 
         if get_polygon_data:
-            pass # TODO
+            num_polygon_ds = len(polygon_datasets)
+            log.debug(f'{label} Polygon datasets={num_polygon_ds}')
+            for idx, ft_type in enumerate(iex_datasets):
+                dataset_field = polygon_consts.get_ft_str(
+                    ft_type=ft_type)
+
+                log.debug(
+                    f'{label} Polygon={idx}/{num_polygon_ds} '
+                    f'field={dataset_field} ticker={ticker}')
+                polygon_label = f'{label}-{dataset_field}'
+                polygon_req = copy.deepcopy(work_dict)
+                polygon_req['label'] = polygon_label
+                polygon_req['ft_type'] = ft_type
+                polygon_req['field'] = dataset_field
+                polygon_req['ticker'] = ticker
+                polygon_req['backfill_date'] = backfill_date
+                polygon_req['verbose'] = verbose
+
+                polygon_res = polygon_data.get_data_from_polygon(
+                    work_dict=polygon_req)
+
+                status_str = (
+                    ae_consts.get_status(status=polygon_res['status']))
+                if polygon_res['status'] == ae_consts.SUCCESS:
+                    polygon_rec = polygon_res['rec']
+                    rk = f'{redis_key}_{dataset_field}'
+                    if backfill_date:
+                        rk = (
+                            f'{ticker}_{backfill_date}_'
+                            f'{dataset_field}')
+                    msg = (
+                        f'{label} Polygon ticker={ticker} '
+                        f'redis_key={rk} '
+                        f'field={dataset_field} '
+                        f'status={status_str} '
+                        f'err={polygon_res["err"]}')
+                    if ae_consts.ev('SHOW_SUCCESS', '0') == '1':
+                        log.info(msg)
+                    else:
+                        log.debug(msg)
+                    if dataset_field == 'news':
+                        rec['polygon_news'] = polygon_rec['data']
+                    else:
+                        rec[dataset_field] = polygon_rec['data']
+                    num_success += 1
+                else:
+                    log.debug(
+                        f'{label} failed Polygon ticker={ticker} '
+                        f'field={dataset_field} '
+                        f'status={status_str} err={polygon_res["err"]}')
 
         if get_iex_data:
             num_iex_ds = len(iex_datasets)
