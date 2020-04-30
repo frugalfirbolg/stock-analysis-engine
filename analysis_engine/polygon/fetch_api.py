@@ -709,7 +709,7 @@ def fetch_dividends(
     if remove_these:
         df = df.drop(columns=remove_these)
 
-    return df.set_index('recordDate')
+    return df.set_index('exDate')
 # end of fetch_dividends
 
 
