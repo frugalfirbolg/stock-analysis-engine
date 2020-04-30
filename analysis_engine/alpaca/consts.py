@@ -155,7 +155,7 @@ ALPACA_TIME_FIELDS = [
 ALPACA_EPOCH_FIELDS = []
 ALPACA_SEC_EPOCH_FIELDS = [
     't',
-    'timestamp'
+    'timestamp',
     'datetime'
 ]
 ALPACA_SECOND_FIELDS = []
