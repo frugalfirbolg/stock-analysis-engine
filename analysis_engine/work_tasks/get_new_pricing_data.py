@@ -73,6 +73,7 @@ import copy
 import celery
 import analysis_engine.consts as ae_consts
 import analysis_engine.utils as ae_utils
+import analysis_engine.polygon.consts as polygon_consts
 import analysis_engine.iex.consts as iex_consts
 import analysis_engine.iex.get_pricing_on_date as iex_pricing
 import analysis_engine.td.consts as td_consts
@@ -184,6 +185,10 @@ def get_new_pricing_data(
         fetch_mode = work_dict.get(
             'fetch_mode',
             ae_consts.FETCH_MODE_ALL)
+        polygon_token = work_dict.get(
+            'polygon_token',
+            polygon_consts.POLYGON_TOKEN
+        )
         iex_token = work_dict.get(
             'iex_token',
             iex_consts.IEX_TOKEN)
@@ -199,62 +204,73 @@ def get_new_pricing_data(
             False)
 
         # control flags to deal with feed issues:
+        get_polygon_data = True
         get_iex_data = True
         get_td_data = True
 
         if (
                 fetch_mode == ae_consts.FETCH_MODE_ALL
                 or str_fetch_mode == 'initial'):
+            get_polygon_data = True
             get_iex_data = True
             get_td_data = True
             iex_datasets = ae_consts.IEX_INITIAL_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_ALL
                 or str_fetch_mode == 'all'):
+            get_polygon_data = True
             get_iex_data = True
             get_td_data = True
             iex_datasets = ae_consts.IEX_DATASETS_DEFAULT
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_YHO
                 or str_fetch_mode == 'yahoo'):
+            get_polygon_data = False
             get_iex_data = False
             get_td_data = False
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_IEX
                 or str_fetch_mode == 'iex-all'):
+            get_polygon_data = False
             get_iex_data = True
             get_td_data = False
             iex_datasets = ae_consts.IEX_DATASETS_DEFAULT
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_IEX
                 or str_fetch_mode == 'iex'):
+            get_polygon_data = False
             get_iex_data = True
             get_td_data = False
             iex_datasets = ae_consts.IEX_INTRADAY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_INTRADAY
                 or str_fetch_mode == 'intra'):
+            get_polygon_data = True
             get_iex_data = True
             get_td_data = True
             iex_datasets = ae_consts.IEX_INTRADAY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_DAILY
                 or str_fetch_mode == 'daily'):
+            get_polygon_data = True
             get_iex_data = True
             get_td_data = False
             iex_datasets = ae_consts.IEX_DAILY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_WEEKLY
                 or str_fetch_mode == 'weekly'):
+            get_polygon_data = True
             get_iex_data = True
             get_td_data = False
             iex_datasets = ae_consts.IEX_WEEKLY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_TD
                 or str_fetch_mode == 'td'):
+            get_polygon_data = False
             get_iex_data = False
             get_td_data = True
         else:
+            get_polygon_data = False
             get_iex_data = False
             get_td_data = False
 
@@ -262,6 +278,7 @@ def get_new_pricing_data(
             found_fetch = False
             iex_datasets = []
             for fetch_name in fetch_arr:
+                # TODO add polygon_datasets
                 if fetch_name not in iex_datasets:
                     if fetch_name == 'iex_min':
                         iex_datasets.append('minute')
@@ -330,6 +347,20 @@ def get_new_pricing_data(
 
         num_tokens = 0
 
+        if get_polygon_data:
+            if not polygon_token:
+                log.warn(
+                    f'{label} - '
+                    'please set a valid polygon Token and Secret'
+                    '(https://app.polygon.markets/signup)'
+                    'to fetch data from polygon. It must be set'
+                    'as an environment variable like: '
+                    'export POLYGON_TOKEN=<token>'
+                )
+                get_polygon_data = False
+            else:
+                num_tokens += 1
+        
         if get_iex_data:
             if not iex_token:
                 log.warn(
@@ -371,6 +402,7 @@ def get_new_pricing_data(
         get_yahoo_data = False
 
         if (
+                not get_polygon_data and
                 not get_iex_data and
                 not get_td_data and
                 not get_yahoo_data):
@@ -378,12 +410,13 @@ def get_new_pricing_data(
             if num_tokens == 0:
                 res['status'] = ae_consts.MISSING_TOKEN
                 err = (
-                    f'Please set a valid IEX_TOKEN or TD_TOKEN '
-                    f'environment variable')
+                    f'Please set valid polygon_TOKEN and polygon_SECRET,'
+                    ' IEX_TOKEN or TD_TOKEN environment variables')
             else:
                 err = (
                     f'Please set at least one supported datafeed from '
                     f'either: '
+                    f'polygon (fetch -t TICKER -g polygon) or '
                     f'IEX Cloud (fetch -t TICKER -g iex) or '
                     f'Tradier (fetch -t TICKER -g td) '
                     f'for '
@@ -411,6 +444,7 @@ def get_new_pricing_data(
         log.debug(
             f'{label} getting pricing for ticker={ticker} '
             f'cur_date={cur_date} exp_date={exp_date} '
+            f'polygon={get_polygon_data}'
             f'IEX={get_iex_data} '
             f'TD={get_td_data} '
             f'YHO={get_yahoo_data}')
@@ -457,6 +491,9 @@ def get_new_pricing_data(
                     f'{label} failed YHO ticker={ticker} '
                     f'status={status_str} err={yahoo_res["err"]}')
         # end of get from yahoo
+
+        if get_polygon_data:
+            pass # TODO
 
         if get_iex_data:
             num_iex_ds = len(iex_datasets)

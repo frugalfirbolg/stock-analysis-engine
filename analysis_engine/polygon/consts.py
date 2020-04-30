@@ -1,28 +1,9 @@
 """
-**Alpaca and Polygon Environment Variables**
-
-Alpaca Token is publishable key ID.
-
-Polygon Token can be Alpaca Token.
+**Polygon Environment Variables**
 
 .. code-block:: python
 
-    ALPACA_API_VERSION = os.getenv(
-        'ALPACA_API_VERSION',
-        'v1')
-    ALPACA_URL_BASE = os.getenv(
-        'ALPACA_URL',
-        f'https://data.alpaca.markets/{ALPACA_API_VERSION}')
-    ALPACA_TOKEN = os.getenv(
-        'ALPACA_TOKEN',
-        None)
-    ALPACA_SECRET = os.getenv(
-        'ALPACA_SECRET',
-        None
-    )
-    ALPACA_PROXIES = os.getenv(
-        'ALPACA_PROXIES',
-        None)
+    
     POLYGON_URL = os.getenv(
         'POLYGON_URL',
         'https://api.polygon.io/'
@@ -33,7 +14,7 @@ Polygon Token can be Alpaca Token.
     )
     POLYGON_TOKEN = os.getenv(
         'POLYGON_TOKEN',
-        ALPACA_TOKEN
+        None
     )
     POLYGON_PROXIES = os.getenv(
         'POLYGON_PROXIES',
@@ -93,28 +74,10 @@ FUNDAMENTAL_DATASETS = [
     FETCH_STATS
 ]
 
-ALPACA_DATE_FORMAT = '%Y-%m-%d'
-ALPACA_TICK_FORMAT = '%Y-%m-%d %H:%M:%S'
-IEX_FETCH_MINUTE_FORMAT = '%H:%M'
+POLYGON_DATE_FORMAT = '%Y-%m-%d'
+POLYGON_TICK_FORMAT = '%Y-%m-%d %H:%M:%S'
+POLYGON_FETCH_MINUTE_FORMAT = '%H:%M'
 
-# Alpaca Environment Variables
-ALPACA_API_VERSION = os.getenv(
-    'ALPACA_API_VERSION',
-    'v1')
-ALPACA_URL_BASE = os.getenv(
-    'ALPACA_URL',
-    f'https://data.alpaca.markets/{ALPACA_API_VERSION}')
-
-ALPACA_TOKEN = os.getenv(
-    'ALPACA_TOKEN',
-    None)
-ALPACA_SECRET = os.getenv(
-        'ALPACA_SECRET',
-        None
-    )
-ALPACA_PROXIES = os.getenv(
-    'ALPACA_PROXIES',
-    None)
 #polygon API features are split between versions
 #POLYGON_API_VERSION = os.getenv(
 #    'POLYGON_API_VERSION',
@@ -126,12 +89,12 @@ POLYGON_URL = os.getenv(
 )
 POLYGON_TOKEN = os.getenv(
     'POLYGON_TOKEN',
-    ALPACA_TOKEN
+    None
 )
 POLYGON_PROXIES = os.getenv(
     'POLYGON_PROXIES',
     None)
-ALPACA_DATE_FIELDS = [
+POLYGON_DATE_FIELDS = [
     'calendarDate',
     'reportPeriod',
     'updated',
@@ -140,33 +103,32 @@ ALPACA_DATE_FIELDS = [
     'declaredDate',
     'paymentDate',
     'recordDate']
-ALPACA_TIME_FIELDS = [
+POLYGON_TIME_FIELDS = [
     'closeTime',
     'close.time',
     'delayedPriceTime',
     'extendedPriceTime',
-    'iexLastUpdated',
     'latestTime',
     'openTime',
     'open.time'
     'processedTime',
     'time',
     'lastUpdated']
-ALPACA_EPOCH_FIELDS = []
-ALPACA_SEC_EPOCH_FIELDS = [
+POLYGON_EPOCH_FIELDS = []
+POLYGON_SEC_EPOCH_FIELDS = [
     't',
     'timestamp',
     'datetime'
 ]
-ALPACA_SECOND_FIELDS = []
+POLYGON_SECOND_FIELDS = []
 
 ENV_FETCH_DATASETS = os.getenv(
-    'DEFAULT_FETCH_DATASETS_IEX',
+    'DEFAULT_FETCH_DATASETS_POLYGON',
     None)
 if ENV_FETCH_DATASETS:
-    SPLIT_FETCH_DATASETS_IEX = ENV_FETCH_DATASETS.split(',')
+    SPLIT_FETCH_DATASETS_POLYGON = ENV_FETCH_DATASETS.split(',')
     DEFAULT_FETCH_DATASETS = []
-    for d in SPLIT_FETCH_DATASETS_IEX:
+    for d in SPLIT_FETCH_DATASETS_POLYGON:
         if d == 'minute':
             DEFAULT_FETCH_DATASETS.append(
                 FETCH_MINUTE)
@@ -176,21 +138,12 @@ if ENV_FETCH_DATASETS:
         elif d == 'quote':
             DEFAULT_FETCH_DATASETS.append(
                 FETCH_QUOTE)
-        elif d == 'stats':
-            DEFAULT_FETCH_DATASETS.append(
-                FETCH_STATS)
-        elif d == 'peers':
-            DEFAULT_FETCH_DATASETS.append(
-                FETCH_PEERS)
         elif d == 'news':
             DEFAULT_FETCH_DATASETS.append(
                 FETCH_NEWS)
         elif d == 'financials':
             DEFAULT_FETCH_DATASETS.append(
                 FETCH_FINANCIALS)
-        elif d == 'earnings':
-            DEFAULT_FETCH_DATASETS.append(
-                FETCH_EARNINGS)
         elif d == 'dividends':
             DEFAULT_FETCH_DATASETS.append(
                 FETCH_DIVIDENDS)
@@ -216,16 +169,10 @@ def get_ft_str(
         return 'minute'
     elif ft_type == FETCH_QUOTE or ft_str == 'quote':
         return 'quote'
-    elif ft_type == FETCH_STATS or ft_str == 'stats':
-        return 'stats'
-    elif ft_type == FETCH_PEERS or ft_str == 'peers':
-        return 'peers'
     elif ft_type == FETCH_NEWS or ft_str == 'news':
         return 'news'
     elif ft_type == FETCH_FINANCIALS or ft_str == 'financials':
         return 'financials'
-    elif ft_type == FETCH_EARNINGS or ft_str == 'earnings':
-        return 'earnings'
     elif ft_type == FETCH_DIVIDENDS or ft_str == 'dividends':
         return 'dividends'
     elif ft_type == FETCH_COMPANY or ft_str == 'company':
@@ -248,16 +195,10 @@ def get_datafeed_str(
         return 'minute'
     elif df_type == DATAFEED_QUOTE:
         return 'quote'
-    elif df_type == DATAFEED_STATS:
-        return 'stats'
-    elif df_type == DATAFEED_PEERS:
-        return 'peers'
     elif df_type == DATAFEED_NEWS:
         return 'news'
     elif df_type == DATAFEED_FINANCIALS:
         return 'financials'
-    elif df_type == DATAFEED_EARNINGS:
-        return 'earnings'
     elif df_type == DATAFEED_DIVIDENDS:
         return 'dividends'
     elif df_type == DATAFEED_COMPANY:

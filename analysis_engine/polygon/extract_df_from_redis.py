@@ -1,5 +1,5 @@
 """
-Extract an Alpaca dataset from Redis and
+Extract an Polygon dataset from Redis and
 return it as a ``pandas.DataFrame`` or None
 
 Please refer to the `Extraction API reference
@@ -12,19 +12,19 @@ import copy
 import analysis_engine.consts as ae_consts
 import analysis_engine.utils as ae_utils
 import analysis_engine.api_requests as api_requests
-import analysis_engine.alpaca.consts as alpaca_consts
+import analysis_engine.polygon.consts as polygon_consts
 import analysis_engine.extract_utils as extract_utils
 import spylunking.log.setup_logging as log_utils
 
 log = log_utils.build_colorized_logger(name=__name__)
 keys = {
-    'company': alpaca_consts.DATAFEED_COMPANY,
-    'daily': alpaca_consts.DATAFEED_DAILY,
-    'dividends': alpaca_consts.DATAFEED_DIVIDENDS,
-    'financials': alpaca_consts.DATAFEED_FINANCIALS,
-    'minute': alpaca_consts.DATAFEED_MINUTE,
-    'news': alpaca_consts.DATAFEED_NEWS,
-    'quote': alpaca_consts.DATAFEED_QUOTE
+    'company': polygon_consts.DATAFEED_COMPANY,
+    'daily': polygon_consts.DATAFEED_DAILY,
+    'dividends': polygon_consts.DATAFEED_DIVIDENDS,
+    'financials': polygon_consts.DATAFEED_FINANCIALS,
+    'minute': polygon_consts.DATAFEED_MINUTE,
+    'news': polygon_consts.DATAFEED_NEWS,
+    'quote': polygon_consts.DATAFEED_QUOTE
 }
 
 
@@ -36,16 +36,16 @@ def extract_daily_dataset(
         verbose=False):
     """extract_daily_dataset
 
-    Extract the Alpaca daily data for a ticker from Redis and
+    Extract the Polygon daily data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
     .. code-block:: python
 
-        import analysis_engine.alpaca.extract_df_from_redis as alpaca_extract
+        import analysis_engine.polygon.extract_df_from_redis as polygon_extract
 
         # extract by historical date is also supported as an arg
         # date='2019-02-15'
-        daily_status, daily_df = alpaca_extract.extract_daily_dataset(
+        daily_status, daily_df = polygon_extract.extract_daily_dataset(
             ticker='SPY')
         print(daily_df)
 
@@ -74,16 +74,16 @@ def extract_minute_dataset(
         verbose=False):
     """extract_minute_dataset
 
-    Extract the Alpaca minute intraday data for a ticker from Redis and
+    Extract the Polygon minute intraday data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
     .. code-block:: python
 
-        import analysis_engine.alpaca.extract_df_from_redis as alpaca_extract
+        import analysis_engine.polygon.extract_df_from_redis as polygon_extract
 
         # extract by historical date is also supported as an arg
         # date='2019-02-15'
-        minute_status, minute_df = alpaca_extract.extract_minute_dataset(
+        minute_status, minute_df = polygon_extract.extract_minute_dataset(
             ticker='SPY')
         print(minute_df)
 
@@ -112,16 +112,16 @@ def extract_quote_dataset(
         verbose=False):
     """extract_quote_dataset
 
-    Extract the Alpaca quote data for a ticker from Redis and
+    Extract the Polygon quote data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
     .. code-block:: python
 
-        import analysis_engine.alpaca.extract_df_from_redis as alpaca_extract
+        import analysis_engine.polygon.extract_df_from_redis as polygon_extract
 
         # extract by historical date is also supported as an arg
         # date='2019-02-15'
-        quote_status, quote_df = alpaca_extract.extract_quote_dataset(
+        quote_status, quote_df = polygon_extract.extract_quote_dataset(
             ticker='SPY')
         print(quote_df)
 
@@ -150,16 +150,16 @@ def extract_news_dataset(
         verbose=False):
     """extract_news_dataset
 
-    Extract the Alpaca news data for a ticker from Redis and
+    Extract the Polygon news data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
     .. code-block:: python
 
-        import analysis_engine.alpaca.extract_df_from_redis as alpaca_extract
+        import analysis_engine.polygon.extract_df_from_redis as polygon_extract
 
         # extract by historical date is also supported as an arg
         # date='2019-02-15'
-        news_status, news_df = alpaca_extract.extract_news_dataset(
+        news_status, news_df = polygon_extract.extract_news_dataset(
             ticker='SPY')
         print(news_df)
 
@@ -188,16 +188,16 @@ def extract_financials_dataset(
         verbose=False):
     """extract_financials_dataset
 
-    Extract the Alpaca financial data for a ticker from Redis and
+    Extract the Polygon financial data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
     .. code-block:: python
 
-        import analysis_engine.alpaca.extract_df_from_redis as alpaca_extract
+        import analysis_engine.polygon.extract_df_from_redis as polygon_extract
 
         # extract by historical date is also supported as an arg
         # date='2019-02-15'
-        fin_status, fin_df = alpaca_extract.extract_financials_dataset(
+        fin_status, fin_df = polygon_extract.extract_financials_dataset(
             ticker='SPY')
         print(fin_df)
 
@@ -226,16 +226,16 @@ def extract_dividends_dataset(
         verbose=False):
     """extract_dividends_dataset
 
-    Extract the Alpaca dividends data for a ticker from Redis and
+    Extract the Polygon dividends data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
     .. code-block:: python
 
-        import analysis_engine.alpaca.extract_df_from_redis as alpaca_extract
+        import analysis_engine.polygon.extract_df_from_redis as polygon_extract
 
         # extract by historical date is also supported as an arg
         # date='2019-02-15'
-        div_status, div_df = alpaca_extract.extract_dividends_dataset(
+        div_status, div_df = polygon_extract.extract_dividends_dataset(
             ticker='SPY')
         print(div_df)
 
@@ -264,16 +264,16 @@ def extract_company_dataset(
         verbose=False):
     """extract_company_dataset
 
-    Extract the Alpaca company data for a ticker from Redis and
+    Extract the Polygon company data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
     .. code-block:: python
 
-        import analysis_engine.alpaca.extract_df_from_redis as alpaca_extract
+        import analysis_engine.polygon.extract_df_from_redis as polygon_extract
 
         # extract by historical date is also supported as an arg
         # date='2019-02-15'
-        comp_status, comp_df = alpaca_extract.extract_company_dataset(
+        comp_status, comp_df = polygon_extract.extract_company_dataset(
             ticker='SPY')
         print(comp_df)
 
@@ -303,10 +303,10 @@ def extract_dataset(
         verbose=False):
     """extract_dataset
 
-    Extract the Alpaca key data for a ticker from Redis and
+    Extract the Polygon key data for a ticker from Redis and
     return it as a tuple (status, ``pandas.Dataframe``)
 
-    :param key: Alpaca dataset key
+    :param key: Polygon dataset key
     :param ticker: string ticker to extract
     :param date: optional - string date to extract
         formatted ``YYYY-MM-DD``
@@ -320,7 +320,7 @@ def extract_dataset(
         return None
     label = key
     df_type = keys[key]
-    df_str = alpaca_consts.get_datafeed_str(df_type=df_type)
+    df_str = polygon_consts.get_datafeed_str(df_type=df_type)
     latest_close_date = ae_utils.get_last_close_str()
 
     use_date = date

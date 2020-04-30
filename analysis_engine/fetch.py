@@ -8,6 +8,7 @@ import analysis_engine.consts as ae_consts
 import analysis_engine.utils as ae_utils
 import analysis_engine.iex.consts as iex_consts
 import analysis_engine.work_tasks.get_new_pricing_data as price_utils
+import analysis_engine.polygon.extract_df_from_redis as polygon_extract_utils
 import analysis_engine.iex.extract_df_from_redis as iex_extract_utils
 import analysis_engine.yahoo.extract_df_from_redis as yahoo_extract_utils
 import analysis_engine.td.extract_df_from_redis as td_extract_utils
@@ -21,6 +22,7 @@ def fetch(
         ticker=None,
         tickers=None,
         fetch_mode=None,
+        polygon_datasets=None,
         iex_datasets=None,
         redis_enabled=True,
         redis_address=None,
@@ -80,6 +82,9 @@ def fetch(
 
     :param fetch_mode: data sources - default is ``all`` (both IEX
         and Yahoo), ``iex`` for only IEX, ``yahoo`` for only Yahoo.
+    :param polygon_datasets: list of strings for gathering specific 
+        Polygon and Polygon datasets which are set as consts:
+        ``analys_engine.polygon.consts.FETCH_*``.
     :param iex_datasets: list of strings for gathering specific `IEX
         datasets <https://iexcloud.io/>`__
         which are set as consts: ``analysis_engine.iex.consts.FETCH_*``.
@@ -256,6 +261,7 @@ def fetch(
         fetch_req['ticker'] = ticker
         fetch_req['label'] = label
         fetch_req['fetch_mode'] = fetch_mode
+        fetch_req['polygon_datasets'] = polygon_datasets
         fetch_req['iex_datasets'] = iex_datasets
         fetch_req['s3_enabled'] = s3_enabled
         fetch_req['s3_bucket'] = s3_bucket
@@ -299,7 +305,13 @@ def fetch(
     """
     Extract Datasets
     """
-
+    polygon_daily_status = ae_consts.FAILED
+    polygon_minute_status = ae_consts.FAILED
+    polygon_quote_status = ae_consts.FAILED
+    polygon_news_status = ae_consts.FAILED
+    polygon_financials_status = ae_consts.FAILED
+    polygon_dividends_status = ae_consts.FAILED
+    polygon_company_status = ae_consts.FAILED
     iex_daily_status = ae_consts.FAILED
     iex_minute_status = ae_consts.FAILED
     iex_quote_status = ae_consts.FAILED
@@ -316,6 +328,13 @@ def fetch(
     td_calls_status = ae_consts.FAILED
     td_puts_status = ae_consts.FAILED
 
+    polygon_daily_df = None
+    polygon_minute_df = None
+    polygon_quote_df = None
+    polygon_news_df = None
+    polygon_financials_df = None
+    polygon_dividends_df = None
+    polygon_company_df = None
     iex_daily_df = None
     iex_minute_df = None
     iex_quote_df = None
@@ -333,6 +352,10 @@ def fetch(
     td_calls_df = None
     td_puts_df = None
 
+    extract_polygon = True
+    if fetch_mode not in ['all', 'polygon']:
+        extract_polygon = False
+    
     extract_iex = True
     if fetch_mode not in ['all', 'iex']:
         extract_iex = False
@@ -354,6 +377,57 @@ def fetch(
             base_key=service_dict.get('base_key', None),
             ds_id=label,
             service_dict=service_dict)
+
+        if 'daily' in polygon_datasets or extract_polygon:
+            polygon_daily_status, polygon_daily_df = \
+                polygon_extract_utils.extract_daily_dataset(
+                    extract_req)
+            if polygon_daily_status != ae_consts.SUCCESS:
+                if verbose:
+                    log.warning(f'unable to fetch polygon_daily={ticker}')
+        if 'minute' in polygon_datasets or extract_polygon:
+            polygon_minute_status, polygon_minute_df = \
+                polygon_extract_utils.extract_minute_dataset(
+                    extract_req)
+            if polygon_minute_status != ae_consts.SUCCESS:
+                if verbose:
+                    log.warning(f'unable to fetch polygon_minute={ticker}')
+        if 'quote' in polygon_datasets or extract_polygon:
+            polygon_quote_status, polygon_quote_df = \
+                polygon_extract_utils.extract_quote_dataset(
+                    extract_req)
+            if polygon_quote_status != ae_consts.SUCCESS:
+                if verbose:
+                    log.warning(f'unable to fetch polygon_quote={ticker}')
+        if 'news' in polygon_datasets or extract_polygon:
+            polygon_news_status, polygon_news_df = \
+                polygon_extract_utils.extract_news_dataset(
+                    extract_req)
+            if polygon_news_status != ae_consts.SUCCESS:
+                if verbose:
+                    log.warning(f'unable to fetch polygon_news={ticker}')
+        if 'financials' in polygon_datasets or extract_polygon:
+            polygon_financials_status, polygon_financials_df = \
+                polygon_extract_utils.extract_financials_dataset(
+                    extract_req)
+            if polygon_financials_status != ae_consts.SUCCESS:
+                if verbose:
+                    log.warning(f'unable to fetch polygon_financials={ticker}')
+        if 'dividends' in polygon_datasets or extract_polygon:
+            polygon_dividends_status, polygon_dividends_df = \
+                polygon_extract_utils.extract_dividends_dataset(
+                    extract_req)
+            if polygon_dividends_status != ae_consts.SUCCESS:
+                if verbose:
+                    log.warning(f'unable to fetch polygon_dividends={ticker}')
+        if 'company' in polygon_datasets or extract_polygon:
+            polygon_company_status, polygon_company_df = \
+                polygon_extract_utils.extract_dividends_dataset(
+                    extract_req)
+            if polygon_company_status != ae_consts.SUCCESS:
+                if verbose:
+                    log.warning(f'unable to fetch polygon_company={ticker}')
+        # end of Polygon extracts
 
         if 'daily' in iex_datasets or extract_iex:
             iex_daily_status, iex_daily_df = \
@@ -465,17 +539,17 @@ def fetch(
                 if verbose:
                     log.warning(f'unable to fetch tdputs={ticker}')
         # td extracts
-
-        ticker_data['daily'] = iex_daily_df
-        ticker_data['minute'] = iex_minute_df
-        ticker_data['quote'] = iex_quote_df
+        
+        ticker_data['daily'] = polygon_daily_df
+        ticker_data['minute'] = polygon_minute_df
+        ticker_data['quote'] = polygon_quote_df
         ticker_data['stats'] = iex_stats_df
         ticker_data['peers'] = iex_peers_df
-        ticker_data['news1'] = iex_news_df
-        ticker_data['financials'] = iex_financials_df
+        ticker_data['news1'] = polygon_news_df
+        ticker_data['financials'] = polygon_financials_df
         ticker_data['earnings'] = iex_earnings_df
-        ticker_data['dividends'] = iex_dividends_df
-        ticker_data['company'] = iex_company_df
+        ticker_data['dividends'] = polygon_dividends_df
+        ticker_data['company'] = polygon_company_df
         ticker_data['calls'] = yahoo_option_calls_df
         ticker_data['puts'] = yahoo_option_puts_df
         ticker_data['pricing'] = yahoo_pricing_df
