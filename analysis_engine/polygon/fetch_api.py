@@ -195,7 +195,7 @@ def fetch_tickers(
     
     polygon_helpers.convert_datetime_columns(
         df=df)
-    return df.set_index('ticker')
+    return df
 # end of fetch_tickers
 
 
@@ -289,10 +289,7 @@ def fetch_daily(
     df.rename(columns={'time':'date'}, inplace=True)
     df['date'] = df['date'].dt.strftime(
         ae_consts.COMMON_DATE_FORMAT)
-    return df.set_index(
-        [
-            'date'
-        ])
+    return df
 # end of fetch_daily
 
 
@@ -384,10 +381,7 @@ def fetch_minute(
     # make sure dates are set as strings in the cache
     df['time'] = df['time'].dt.strftime(
         ae_consts.COMMON_TICK_DATE_FORMAT)
-    return df.set_index(
-        [
-            'time'
-        ])
+    return df
 # end of fetch_minute
 
 
@@ -468,7 +462,7 @@ def fetch_quote(
     if remove_these:
         df = df.drop(columns=remove_these)
 
-    return df.set_index('timestamp')
+    return df
 # end of fetch_quote
 
 
@@ -553,9 +547,7 @@ def fetch_news(
     if remove_these:
         df = df.drop(columns=remove_these)
 
-    return df.set_index([
-        'timestamp'
-    ])
+    return df
 # end of fetch_news
 
 
@@ -630,7 +622,7 @@ def fetch_financials(
     if remove_these:
         df = df.drop(columns=remove_these)
 
-    return df.set_index('updated')
+    return df
 # end of fetch_financials
 
 
@@ -711,7 +703,7 @@ def fetch_dividends(
     if remove_these:
         df = df.drop(columns=remove_these)
 
-    return df.set_index('exDate')
+    return df
 # end of fetch_dividends
 
 
