@@ -365,18 +365,27 @@ def get_new_pricing_data(
                             'unsupported IEX dataset '
                             f'{fetch_name}')
             found_fetch = (
-                len(iex_datasets) != 0)
+                len(iex_datasets) != 0) or (len(polygon_datasets) != 0)
             if not found_fetch:
                 log.error(
                     f'{label} - unsupported '
                     f'fetch_mode={fetch_mode} value')
             else:
-                get_iex_data = True
-                log.debug(
-                    f'{label} - '
-                    f'fetching={len(iex_datasets)} '
-                    f'{iex_datasets} '
-                    f'fetch_mode={fetch_mode}')
+                get_polygon_data = (len(polygon_datasets) != 0)
+                if get_polygon_data:
+                    log.debug(
+                        f'{label} - '
+                        f'fetching={len(polygon_datasets)} '
+                        f'{polygon_datasets} '
+                        f'fetch_mode={fetch_mode}')
+                
+                get_iex_data = len(iex_datasets) != 0)
+                if get_iex_data:
+                    log.debug(
+                        f'{label} - '
+                        f'fetching={len(iex_datasets)} '
+                        f'{iex_datasets} '
+                        f'fetch_mode={fetch_mode}')
         # end of screening custom fetch_mode settings
 
         num_tokens = 0
