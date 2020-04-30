@@ -19,8 +19,8 @@
     POLYGON_PROXIES = os.getenv(
         'POLYGON_PROXIES',
         None)
-    DEFAULT_FETCH_DATASETS="daily,minute,quote,stats,
-    peers,news,financials,earnings,dividends,company"
+    DEFAULT_FETCH_DATASETS="daily,minute,quote,
+    news,financials,dividends,company"
 
 """
 

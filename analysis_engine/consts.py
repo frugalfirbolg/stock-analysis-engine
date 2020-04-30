@@ -620,7 +620,6 @@ POLYGON_DATASETS_DEFAULT = [
     'quote',
     'news',
     'financials',
-    'earnings',
     'company'
 ]
 POLYGON_INTRADAY_DATASETS = [
