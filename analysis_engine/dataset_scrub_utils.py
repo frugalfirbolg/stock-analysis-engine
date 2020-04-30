@@ -42,6 +42,7 @@ import pandas as pd
 import analysis_engine.consts as ae_consts
 import analysis_engine.utils as ae_utils
 import analysis_engine.iex.consts as iex_consts
+import analysis_engine.polygon.consts as polygon_consts
 import analysis_engine.yahoo.consts as yahoo_consts
 import analysis_engine.td.consts as td_consts
 import spylunking.log.setup_logging as log_utils
@@ -80,6 +81,11 @@ def debug_msg(
             datafeed_type == td_consts.DATAFEED_TD_PUTS):
         dft_msg = td_consts.get_datafeed_str_td(
             df_type=datafeed_type)
+    elif (
+            datafeed_type in polygon_consts.DATAFEED_SET
+        ):
+            dft_msg = polygon_consts.get_datafeed_str(
+                df_type=datafeed_type)
     else:
         dft_msg = iex_consts.get_datafeed_str(
             df_type=datafeed_type)

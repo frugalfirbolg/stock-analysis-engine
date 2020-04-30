@@ -165,7 +165,7 @@ def fetch_tickers(
 #{"page":1,"perPage":2,"count":32218,"status":"OK","tickers":[{"ticker":"A","name":"Agilent Technologies Inc.","market":"STOCKS","locale":"US","currency":"USD","active":true,"primaryExch":"NYE","updated":"2020-04-30","codes":{"cik":"0001090872","figiuid":"EQ0087231700001000","scfigi":"BBG001SCTQY4","cfigi":"BBG000C2V3D6","figi":"BBG000C2V541"},"url":"https://api.polygon.io/v2/tickers/A"},{"ticker":"AA","name":"Alcoa Corp","market":"STOCKS","locale":"US","currency":"USD","active":true,"primaryExch":"NYE","updated":"2020-04-30","codes":{"cik":"0001675149","figiuid":"EQ0000000045469815","scfigi":"BBG00B3T3HF1","cfigi":"BBG00B3T3HD3","figi":"BBG00B3T3HK5"},"url":"https://api.polygon.io/v2/tickers/AA"}]}
 
     df = pd.DataFrame(tickers)
-    # Indexing?
+    # TODO Indexing?
     polygon_helpers.convert_datetime_columns(
         df=df)
     return df

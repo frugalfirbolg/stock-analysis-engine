@@ -27,37 +27,41 @@
 import os
 
 
-FETCH_DAILY = 800
-FETCH_MINUTE = 801
-FETCH_QUOTE = 802
-FETCH_STATS = 803
-FETCH_PEERS = 804
-FETCH_NEWS = 805
-FETCH_FINANCIALS = 806
-FETCH_EARNINGS = 807
-FETCH_DIVIDENDS = 808
-FETCH_COMPANY = 809
+FETCH_DAILY = 700
+FETCH_MINUTE = 701
+FETCH_QUOTE = 702
+FETCH_NEWS = 703
+FETCH_FINANCIALS = 704
+FETCH_DIVIDENDS = 705
+FETCH_COMPANY = 706
+FETCH_TICKERS = 707
 
-DATAFEED_DAILY = 900
-DATAFEED_MINUTE = 901
-DATAFEED_QUOTE = 902
-DATAFEED_STATS = 903
-DATAFEED_PEERS = 904
-DATAFEED_NEWS = 905
-DATAFEED_FINANCIALS = 906
-DATAFEED_EARNINGS = 907
-DATAFEED_DIVIDENDS = 908
-DATAFEED_COMPANY = 909
+DATAFEED_DAILY = 700
+DATAFEED_MINUTE = 701
+DATAFEED_QUOTE = 702
+DATAFEED_NEWS = 703
+DATAFEED_FINANCIALS = 704
+DATAFEED_DIVIDENDS = 705
+DATAFEED_COMPANY = 706
+DATAFEED_TICKERS = 707
+
+DATAFEED_SET = [
+    DATAFEED_DAILY,
+    DATAFEED_MINUTE,
+    DATAFEED_QUOTE,
+    DATAFEED_NEWS,
+    DATAFEED_FINANCIALS,
+    DATAFEED_DIVIDENDS,
+    DATAFEED_COMPANY,
+    DATAFEED_TICKERS
+]
 
 DEFAULT_FETCH_DATASETS = [
     FETCH_DAILY,
     FETCH_MINUTE,
     FETCH_QUOTE,
-    FETCH_STATS,
-    FETCH_PEERS,
     FETCH_NEWS,
     FETCH_FINANCIALS,
-    FETCH_EARNINGS,
     FETCH_DIVIDENDS,
     FETCH_COMPANY
 ]
@@ -69,9 +73,7 @@ TIMESENSITIVE_DATASETS = [
 FUNDAMENTAL_DATASETS = [
     FETCH_QUOTE,
     FETCH_FINANCIALS,
-    FETCH_EARNINGS,
     FETCH_DIVIDENDS,
-    FETCH_STATS
 ]
 
 POLYGON_DATE_FORMAT = '%Y-%m-%d'
@@ -150,6 +152,9 @@ if ENV_FETCH_DATASETS:
         elif d == 'company':
             DEFAULT_FETCH_DATASETS.append(
                 FETCH_COMPANY)
+        elif d == 'tickers':
+            DEFAULT_FETCH_DATASETS.append(
+                FETCH_TICKERS)
 # end of building env-datasets to get
 
 FETCH_DATASETS = DEFAULT_FETCH_DATASETS
@@ -177,6 +182,8 @@ def get_ft_str(
         return 'dividends'
     elif ft_type == FETCH_COMPANY or ft_str == 'company':
         return 'company'
+    elif ft_type == FETCH_TICKERS or ft_str == 'tickers':
+        return 'tickers'
     else:
         return f'unsupported ft_type={ft_type}'
 # end of get_ft_str
@@ -203,6 +210,8 @@ def get_datafeed_str(
         return 'dividends'
     elif df_type == DATAFEED_COMPANY:
         return 'company'
+    elif df_type == DATAFEED_TICKERS:
+        return 'tickers'
     else:
         return f'unsupported df_type={df_type}'
 # end of get_datafeed_str
