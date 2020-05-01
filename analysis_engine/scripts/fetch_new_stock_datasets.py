@@ -41,6 +41,8 @@ Turn on verbose debugging with the ``-d`` argument:
 
 import os
 import argparse
+from datetime import datetime
+import pytz
 import celery
 import analysis_engine.work_tasks.get_celery_app as get_celery_app
 import analysis_engine.consts as ae_consts
@@ -234,6 +236,12 @@ def fetch_new_stock_datasets():
             'ticker'),
         required=False,
         dest='ticker')
+    parser.add_argument(
+        '-T',
+        help=(
+            'tickers'),
+        required=False,
+        dest='tickers')
     parser.add_argument(
         '-g',
         help=(
@@ -451,6 +459,7 @@ def fetch_new_stock_datasets():
     run_offline = True
     ticker = ae_consts.TICKER
     ticker_id = ae_consts.TICKER_ID
+    tickers = []
     fetch_mode = 'initial'
     exp_date_str = ae_consts.NEXT_EXP_STR
     ssl_options = ae_consts.SSL_OPTIONS
@@ -484,7 +493,9 @@ def fetch_new_stock_datasets():
 
     if args.ticker:
         ticker = args.ticker.upper()
-    if args.ticker_id:
+    if args.tickers:
+        tickers = [symbol.upper() for symbol in args.tickers.split(',')]
+    if args.ticker_id and not args.tickers:
         ticker_id = args.ticker_id
     if args.exp_date_str:
         exp_date_str = ae_consts.NEXT_EXP_STR
@@ -504,7 +515,7 @@ def fetch_new_stock_datasets():
         s3_secure = args.s3_secure
     if args.s3_bucket_name:
         s3_bucket_name = args.s3_bucket_name
-    if args.keyname:
+    if args.keyname and not args.tickers:
         s3_key = args.keyname
         redis_key = args.keyname
     if args.redis_address:
@@ -537,140 +548,148 @@ def fetch_new_stock_datasets():
         run_offline = False
     if args.backfill_date:
         backfill_date = args.backfill_date
+    else:
+        backfill_date = datetime.today().astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
     if args.debug:
         debug = True
 
     work = api_requests.build_get_new_pricing_request()
 
-    work['ticker'] = ticker
-    work['ticker_id'] = ticker_id
-    work['s3_bucket'] = s3_bucket_name
-    work['s3_key'] = s3_key
-    work['redis_key'] = redis_key
-    work['strike'] = strike
-    work['contract'] = contract_type
-    work['exp_date'] = exp_date_str
-    work['s3_access_key'] = s3_access_key
-    work['s3_secret_key'] = s3_secret_key
-    work['s3_region_name'] = s3_region_name
-    work['s3_address'] = s3_address
-    work['s3_secure'] = s3_secure
-    work['redis_address'] = redis_address
-    work['redis_password'] = redis_password
-    work['redis_db'] = redis_db
-    work['redis_expire'] = redis_expire
-    work['get_pricing'] = get_pricing
-    work['get_news'] = get_news
-    work['get_options'] = get_options
-    work['s3_enabled'] = s3_enabled
-    work['redis_enabled'] = redis_enabled
-    work['fetch_mode'] = fetch_mode
-    work['analysis_type'] = analysis_type
-    work['polygon_datasets'] = polygon_consts.DEFAULT_FETCH_DATASETS
-    work['iex_datasets'] = iex_consts.DEFAULT_FETCH_DATASETS
-    work['backfill_date'] = backfill_date
-    work['debug'] = debug
-    work['label'] = f'ticker={ticker}'
+    if tickers is None:
+        tickers = [ticker]
+    
+    for symbol in tickers:
+        s3_key = f'{symbol}_{backfill_date}'
+        redis_key = s3_key
 
-    if analysis_type == 'scn':
-        label = f'screener={work["ticker"]}'
-        fv_urls = []
-        if args.urls:
-            fv_urls = str(args.urls).split('|')
-        if len(fv_urls) == 0:
-            fv_urls = os.getenv('SCREENER_URLS', []).split('|')
-        screener_req = api_requests.build_screener_analysis_request(
-            ticker=ticker,
-            fv_urls=fv_urls,
-            label=label)
-        work.update(screener_req)
-        start_screener_analysis(
-            req=work)
-    # end of analysis_type
-    else:
-        last_close_date = ae_utils.last_close()
-        last_close_str = last_close_date.strftime(
-            ae_consts.COMMON_DATE_FORMAT)
-        cache_base_key = f'{ticker}_{last_close_str}'
-        if not args.keyname:
-            work['s3_key'] = cache_base_key
-            work['redis_key'] = cache_base_key
+        work['ticker'] = ticker
+        work['s3_bucket'] = s3_bucket_name
+        work['s3_key'] = s3_key
+        work['redis_key'] = redis_key
+        work['strike'] = strike
+        work['contract'] = contract_type
+        work['exp_date'] = exp_date_str
+        work['s3_access_key'] = s3_access_key
+        work['s3_secret_key'] = s3_secret_key
+        work['s3_region_name'] = s3_region_name
+        work['s3_address'] = s3_address
+        work['s3_secure'] = s3_secure
+        work['redis_address'] = redis_address
+        work['redis_password'] = redis_password
+        work['redis_db'] = redis_db
+        work['redis_expire'] = redis_expire
+        work['get_pricing'] = get_pricing
+        work['get_news'] = get_news
+        work['get_options'] = get_options
+        work['s3_enabled'] = s3_enabled
+        work['redis_enabled'] = redis_enabled
+        work['fetch_mode'] = fetch_mode
+        work['analysis_type'] = analysis_type
+        work['polygon_datasets'] = polygon_consts.DEFAULT_FETCH_DATASETS
+        work['iex_datasets'] = iex_consts.DEFAULT_FETCH_DATASETS
+        work['backfill_date'] = backfill_date
+        work['debug'] = debug
+        work['label'] = f'ticker={ticker}'
 
-        path_to_tasks = 'analysis_engine.work_tasks'
-        task_name = (
-            f'{path_to_tasks}'
-            f'.get_new_pricing_data.get_new_pricing_data')
-        task_res = None
-        if ae_consts.is_celery_disabled() or run_offline:
-            work['celery_disabled'] = True
-            work['verbose'] = debug
-            log.debug(
-                f'starting without celery work={ae_consts.ppj(work)} '
-                f'offline={run_offline}')
-            task_res = task_pricing.get_new_pricing_data(
-                work)
-            status_str = ae_consts.get_status(status=task_res['status'])
+        if analysis_type == 'scn':
+            label = f'screener={work["ticker"]}'
+            fv_urls = []
+            if args.urls:
+                fv_urls = str(args.urls).split('|')
+            if len(fv_urls) == 0:
+                fv_urls = os.getenv('SCREENER_URLS', []).split('|')
+            screener_req = api_requests.build_screener_analysis_request(
+                ticker=ticker,
+                fv_urls=fv_urls,
+                label=label)
+            work.update(screener_req)
+            start_screener_analysis(
+                req=work)
+        # end of analysis_type
+        else:
+            last_close_date = ae_utils.last_close()
+            last_close_str = last_close_date.strftime(
+                ae_consts.COMMON_DATE_FORMAT)
+            cache_base_key = f'{ticker}_{last_close_str}'
+            if not args.keyname:
+                work['s3_key'] = cache_base_key
+                work['redis_key'] = cache_base_key
 
-            cur_date = backfill_date
-            if not backfill_date:
-                cur_date = ae_utils.get_last_close_str()
-            redis_arr = work["redis_address"].split(':')
-            include_results = ''
-            if debug:
-                include_results = task_res['rec']
-            if task_res['status'] == ae_consts.SUCCESS:
-                if task_res['rec']['num_success'] == 0:
-                    log.error(
-                        f'failed fetching ticker={work["ticker"]} '
-                        f'from {fetch_mode} - please check the '
-                        'environment variables')
+            path_to_tasks = 'analysis_engine.work_tasks'
+            task_name = (
+                f'{path_to_tasks}'
+                f'.get_new_pricing_data.get_new_pricing_data')
+            task_res = None
+            if ae_consts.is_celery_disabled() or run_offline:
+                work['celery_disabled'] = True
+                work['verbose'] = debug
+                log.debug(
+                    f'starting without celery work={ae_consts.ppj(work)} '
+                    f'offline={run_offline}')
+                task_res = task_pricing.get_new_pricing_data(
+                    work)
+                status_str = ae_consts.get_status(status=task_res['status'])
+
+                cur_date = backfill_date
+                if not backfill_date:
+                    cur_date = ae_utils.get_last_close_str()
+                redis_arr = work["redis_address"].split(':')
+                include_results = ''
+                if debug:
+                    include_results = task_res['rec']
+                if task_res['status'] == ae_consts.SUCCESS:
+                    if task_res['rec']['num_success'] == 0:
+                        log.error(
+                            f'failed fetching ticker={work["ticker"]} '
+                            f'from {fetch_mode} - please check the '
+                            'environment variables')
+                    else:
+                        log.info(
+                            f'done fetching ticker={work["ticker"]} '
+                            f'mode={fetch_mode} '
+                            f'status={status_str} '
+                            f'err={task_res["err"]} {include_results}')
+                        print(
+                            'View keys in redis with:\n'
+                            f'redis-cli -h {redis_arr[0]} '
+                            'keys '
+                            f'"{work["ticker"]}_{cur_date}*"')
+                elif task_res['status'] == ae_consts.MISSING_TOKEN:
+                    print(
+                        'Set an IEX, Polygon, or Tradier token: '
+                        '\n'
+                        '  export IEX_TOKEN=YOUR_IEX_TOKEN\n'
+                        '  export POLYGON_TOKEN=YOUR_POLYGON_TOKEN\n'
+                        '  export TD_TOKEN=YOUR_TD_TOKEN\n')
                 else:
-                    log.info(
+                    log.error(
                         f'done fetching ticker={work["ticker"]} '
                         f'mode={fetch_mode} '
                         f'status={status_str} '
-                        f'err={task_res["err"]} {include_results}')
-                    print(
-                        'View keys in redis with:\n'
-                        f'redis-cli -h {redis_arr[0]} '
-                        'keys '
-                        f'"{work["ticker"]}_{cur_date}*"')
-            elif task_res['status'] == ae_consts.MISSING_TOKEN:
-                print(
-                    'Set an IEX, Polygon, or Tradier token: '
-                    '\n'
-                    '  export IEX_TOKEN=YOUR_IEX_TOKEN\n'
-                    '  export POLYGON_TOKEN=YOUR_POLYGON_TOKEN\n'
-                    '  export TD_TOKEN=YOUR_TD_TOKEN\n')
+                        f'err={task_res["err"]}')
+                # if/else debug
             else:
-                log.error(
-                    f'done fetching ticker={work["ticker"]} '
-                    f'mode={fetch_mode} '
-                    f'status={status_str} '
-                    f'err={task_res["err"]}')
-            # if/else debug
-        else:
-            log.debug(
-                f'connecting to broker={broker_url} '
-                f'backend={backend_url}')
+                log.debug(
+                    f'connecting to broker={broker_url} '
+                    f'backend={backend_url}')
 
-            # Get the Celery app
-            app = get_celery_app.get_celery_app(
-                name=__name__,
-                auth_url=broker_url,
-                backend_url=backend_url,
-                path_to_config_module=celery_config_module,
-                ssl_options=ssl_options,
-                transport_options=transport_options,
-                include_tasks=include_tasks)
+                # Get the Celery app
+                app = get_celery_app.get_celery_app(
+                    name=__name__,
+                    auth_url=broker_url,
+                    backend_url=backend_url,
+                    path_to_config_module=celery_config_module,
+                    ssl_options=ssl_options,
+                    transport_options=transport_options,
+                    include_tasks=include_tasks)
 
-            log.debug(f'calling task={task_name} - work={ae_consts.ppj(work)}')
-            job_id = app.send_task(
-                task_name,
-                (work,))
-            log.debug(f'task={task_name} - job_id={job_id}')
-        # end of if/else
-    # end of supported modes
+                log.debug(f'calling task={task_name} - work={ae_consts.ppj(work)}')
+                job_id = app.send_task(
+                    task_name,
+                    (work,))
+                log.debug(f'task={task_name} - job_id={job_id}')
+            # end of if/else
+        # end of supported modes
 # end of fetch_new_stock_datasets
 
 

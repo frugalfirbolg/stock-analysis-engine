@@ -41,28 +41,36 @@ if [[ "${exp_date}" == "" ]]; then
     fi
 fi
 
-use_date=$(date +"%Y-%m-%d")
-if [[ -e /opt/sa/analysis_engine/scripts/print_last_close_date.py ]]; then
-    use_date_str=$(/opt/sa/analysis_engine/scripts/print_last_close_date.py)
-    use_date=$(echo ${use_date_str} | awk '{print $1}')
-fi
+#use_date=$(date +"%Y-%m-%d")
+#if [[ -e /opt/sa/analysis_engine/scripts/print_last_close_date.py ]]; then
+#    use_date_str=$(/opt/sa/analysis_engine/scripts/print_last_close_date.py)
+#    use_date=$(echo ${use_date_str} | awk '{print $1}')
+#fi
 
 dataset_sources="initial"
 if [[ "${DATASET_SOURCES}" != "" ]]; then
     dataset_sources="${DATASET_SOURCES}"
 fi
 
-for ticker in ${tickers}; do
-    echo ""
-    s3_key="${ticker}_${use_date}"
-    if [[ "${BACKFILL_DATE}" != "" ]]; then
-        echo "fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}"
-        fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}
-    else
-        echo "fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}"
-        fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}
-    fi
-done
+if [[ "${BACKFILL_DATE}" != "" ]]; then
+    echo "fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}"
+    fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}
+else
+    echo "fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}"
+    fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}
+fi
+
+#for ticker in ${tickers}; do
+#    echo ""
+#    s3_key="${ticker}_${use_date}"
+#    if [[ "${BACKFILL_DATE}" != "" ]]; then
+#        echo "fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}"
+#        fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}
+#    else
+#        echo "fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}"
+#        fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}
+#    fi
+#done
 
 date -u +"%Y-%m-%d %H:%M:%S"
 echo "done"

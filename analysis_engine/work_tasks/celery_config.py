@@ -14,7 +14,7 @@ result_backend = os.getenv(
 # while increasing reliability
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-worker_prefetch_multiplier  # noqa
-worker_prefetch_multiplier = 1
+worker_prefetch_multiplier = 2
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_heartbeat  # noqa
 broker_heartbeat = 240  # seconds
@@ -35,6 +35,6 @@ task_publish_retry_policy = {
 task_serializer = 'json'
 result_serializer = 'json'
 accept_content = ['json']
-timezone = 'America/Los_Angeles'
+timezone = 'America/New_York'
 
 task_routes = {}
