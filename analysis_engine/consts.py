@@ -85,6 +85,9 @@ Consts and helper functions
 
 ::
 
+    DATA_PROVIDER = ev(
+        'DATA_PROVIDER',
+        'polygon')
     TICKER = ev(
         'TICKER',
         'SPY')
@@ -483,6 +486,9 @@ CELERY_DISABLED = ev('CELERY_DISABLED', '0') == '1'
 # Custom Variables
 #
 ########################################
+DATA_PROVIDER = ev(
+    'DATA_PROVIDER',
+    'polygon')
 TICKER = ev(
     'TICKER',
     'SPY')
@@ -617,10 +623,7 @@ IEX_INITIAL_DATASETS = [
 POLYGON_DATASETS_DEFAULT = [
     'daily',
     'minute',
-    'quote',
-    'news',
-    'financials',
-    'company'
+    'news'
 ]
 POLYGON_INTRADAY_DATASETS = [
     'minute',
@@ -646,7 +649,9 @@ POLYGON_INITIAL_DATASETS = [
     'daily',
     'minute',
     'news',
-    'company'
+    'company',
+    'dividends',
+    'financials'
 ]
 
 BACKUP_DATASETS = [
@@ -657,7 +662,12 @@ BACKUP_DATASETS = [
     'calls',
     'puts',
     'news1'
-] + IEX_DATASETS_DEFAULT
+]
+if DATA_PROVIDER == 'polygon':
+    BACKUP_DATASETS += POLYGON_DATASETS_DEFAULT
+else:
+    BACKUP_DATASETS += IEX_DATASETS_DEFAULT
+
 if os.getenv('BACKUP_DATASETS', False):
     BACKUP_DATASETS = os.getenv('BACKUP_DATASETS', '').split(',')
 

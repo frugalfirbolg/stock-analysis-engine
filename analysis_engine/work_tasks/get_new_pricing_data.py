@@ -215,17 +215,23 @@ def get_new_pricing_data(
         if (
                 fetch_mode == ae_consts.FETCH_MODE_ALL
                 or str_fetch_mode == 'initial'):
-            get_polygon_data = True
-            get_iex_data = True
-            get_td_data = True
-            iex_datasets = ae_consts.IEX_INITIAL_DATASETS
+            if ae_consts.DATA_PROVIDER == 'polygon':
+                get_polygon_data = True
+                polygon_datasets = ae_consts.POLYGON_INITIAL_DATASETS
+            else:
+                get_iex_data = True
+                get_td_data = True
+                iex_datasets = ae_consts.IEX_INITIAL_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_ALL
                 or str_fetch_mode == 'all'):
-            get_polygon_data = True
-            get_iex_data = True
-            get_td_data = True
-            iex_datasets = ae_consts.IEX_DATASETS_DEFAULT
+            if ae_consts.DATA_PROVIDER == 'polygon':
+                get_polygon_data = True
+                polygon_datasets = ae_consts.POLYGON_DATASETS_DEFAULT
+            else:
+                get_iex_data = True
+                get_td_data = True
+                iex_datasets = ae_consts.IEX_DATASETS_DEFAULT
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_YHO
                 or str_fetch_mode == 'yahoo'):
@@ -263,24 +269,33 @@ def get_new_pricing_data(
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_INTRADAY
                 or str_fetch_mode == 'intra'):
-            get_polygon_data = True
-            get_iex_data = True
-            get_td_data = True
-            iex_datasets = ae_consts.IEX_INTRADAY_DATASETS
+            if ae_consts.DATA_PROVIDER == 'polygon':
+                get_polygon_data = True
+                polygon_datasets = ae_consts.POLYGON_INTRADAY_DATASETS
+            else:
+                get_iex_data = True
+                get_td_data = True
+                iex_datasets = ae_consts.IEX_INTRADAY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_DAILY
                 or str_fetch_mode == 'daily'):
-            get_polygon_data = True
-            get_iex_data = True
-            get_td_data = False
-            iex_datasets = ae_consts.IEX_DAILY_DATASETS
+            if ae_consts.DATA_PROVIDER == 'polygon':
+                get_polygon_data = True
+                polygon_datasets = ae_consts.POLYGON_DAILY_DATASETS
+            else:
+                get_iex_data = True
+                get_td_data = False
+                iex_datasets = ae_consts.IEX_DAILY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_WEEKLY
                 or str_fetch_mode == 'weekly'):
-            get_polygon_data = True
-            get_iex_data = True
-            get_td_data = False
-            iex_datasets = ae_consts.IEX_WEEKLY_DATASETS
+            if ae_consts.DATA_PROVIDER == 'polygon':
+                get_polygon_data = True
+                polygon_datasets = ae_consts.POLYGON_WEEKLY_DATASETS
+            else:
+                get_iex_data = True
+                get_td_data = False
+                iex_datasets = ae_consts.IEX_WEEKLY_DATASETS
         elif (
                 fetch_mode == ae_consts.FETCH_MODE_TD
                 or str_fetch_mode == 'td'):
@@ -297,59 +312,60 @@ def get_new_pricing_data(
             iex_datasets = []
             polygon_datasets = []
             for fetch_name in fetch_arr:
-                if fetch_name not in polygon_datasets:
-                    if fetch_name == 'polygon_min':
-                        polygon_datasets.append('minute')
-                    elif fetch_name == 'min':
-                        polygon_datasets.append('minute')
-                    elif fetch_name == 'minute':
-                        polygon_datasets.append('minute')
-                    elif fetch_name == 'day':
-                        polygon_datasets.append('daily')
-                    elif fetch_name == 'daily':
-                        polygon_datasets.append('daily')
-                    elif fetch_name == 'polygon_daily':
-                        polygon_datasets.append('daily')
-                    elif fetch_name == 'quote':
-                        polygon_datasets.append('quote')
-                    elif fetch_name == 'polygon_quote':
-                        polygon_datasets.append('quote')
-                    elif fetch_name == 'news':
-                        polygon_datasets.append('news')
-                    elif fetch_name == 'polygon_news':
-                        polygon_datasets.append('news')
-                    elif fetch_name == 'fin':
-                        polygon_datasets.append('financials')
-                    elif fetch_name == 'polygon_fin':
-                        polygon_datasets.append('financials')
-                    elif fetch_name == 'div':
-                        polygon_datasets.append('dividends')
-                    elif fetch_name == 'polygon_div':
-                        polygon_datasets.append('dividends')
-                    elif fetch_name == 'comp':
-                        polygon_datasets.append('company')
-                    elif fetch_name == 'polygon_comp':
-                        polygon_datasets.append('company')
-                    else:
-                        log.warn(
-                            'unsupported Polygon dataset '
-                            f'{fetch_name}')
-                
-                if fetch_name not in iex_datasets:
+                if ae_consts.DATA_PROVIDER == 'polygon':
+                    if fetch_name not in polygon_datasets:
+                        if fetch_name == 'polygon_min':
+                            polygon_datasets.append('minute')
+                        elif fetch_name == 'min':
+                            polygon_datasets.append('minute')
+                        elif fetch_name == 'minute':
+                            polygon_datasets.append('minute')
+                        elif fetch_name == 'day':
+                            polygon_datasets.append('daily')
+                        elif fetch_name == 'daily':
+                            polygon_datasets.append('daily')
+                        elif fetch_name == 'polygon_daily':
+                            polygon_datasets.append('daily')
+                        elif fetch_name == 'quote':
+                            polygon_datasets.append('quote')
+                        elif fetch_name == 'polygon_quote':
+                            polygon_datasets.append('quote')
+                        elif fetch_name == 'news':
+                            polygon_datasets.append('news')
+                        elif fetch_name == 'polygon_news':
+                            polygon_datasets.append('news')
+                        elif fetch_name == 'fin':
+                            polygon_datasets.append('financials')
+                        elif fetch_name == 'polygon_fin':
+                            polygon_datasets.append('financials')
+                        elif fetch_name == 'div':
+                            polygon_datasets.append('dividends')
+                        elif fetch_name == 'polygon_div':
+                            polygon_datasets.append('dividends')
+                        elif fetch_name == 'comp':
+                            polygon_datasets.append('company')
+                        elif fetch_name == 'polygon_comp':
+                            polygon_datasets.append('company')
+                        else:
+                            log.warn(
+                                'unsupported Polygon dataset '
+                                f'{fetch_name}')
+                    # end of if ae_consts.DATA_PROVIDER == 'polygon':
+                elif fetch_name not in iex_datasets:
                     if fetch_name == 'iex_min':
                         iex_datasets.append('minute')
-                    #elif fetch_name == 'min':
-                    #    iex_datasets.append('minute')
-                    #elif fetch_name == 'minute':
-                    #    iex_datasets.append('minute')
-                    #elif fetch_name == 'day':
-                    #    iex_datasets.append('daily')
-                    #elif fetch_name == 'daily':
-                    #    iex_datasets.append('daily')
+                    elif fetch_name == 'min':
+                        iex_datasets.append('minute')
+                    elif fetch_name == 'minute':
+                        iex_datasets.append('minute')
+                    elif fetch_name == 'day':
+                        iex_datasets.append('daily')
+                    elif fetch_name == 'daily':
+                        iex_datasets.append('daily')
                     elif fetch_name == 'iex_day':
                         iex_datasets.append('daily')
-                    #elif fetch_name == 'quote':
-                    #    iex_datasets.append('quote')
+                    elif fetch_name == 'quote':
+                        iex_datasets.append('quote')
                     elif fetch_name == 'iex_quote':
                         iex_datasets.append('quote')
                     elif fetch_name == 'iex_stats':
@@ -360,24 +376,24 @@ def get_new_pricing_data(
                         iex_datasets.append('peers')
                     elif fetch_name == 'iex_peers':
                         iex_datasets.append('peers')
-                    #elif fetch_name == 'news':
-                    #    iex_datasets.append('news')
+                    elif fetch_name == 'news':
+                        iex_datasets.append('news')
                     elif fetch_name == 'iex_news':
                         iex_datasets.append('news')
-                    #elif fetch_name == 'fin':
-                    #    iex_datasets.append('financials')
+                    elif fetch_name == 'fin':
+                        iex_datasets.append('financials')
                     elif fetch_name == 'iex_fin':
                         iex_datasets.append('financials')
-                    #elif fetch_name == 'earn':
-                    #    iex_datasets.append('earnings')
+                    elif fetch_name == 'earn':
+                        iex_datasets.append('earnings')
                     elif fetch_name == 'iex_earn':
                         iex_datasets.append('earnings')
-                    #elif fetch_name == 'div':
-                    #    iex_datasets.append('dividends')
+                    elif fetch_name == 'div':
+                        iex_datasets.append('dividends')
                     elif fetch_name == 'iex_div':
                         iex_datasets.append('dividends')
-                    #elif fetch_name == 'comp':
-                    #    iex_datasets.append('company')
+                    elif fetch_name == 'comp':
+                        iex_datasets.append('company')
                     elif fetch_name == 'iex_comp':
                         iex_datasets.append('company')
                     elif fetch_name == 'td':
