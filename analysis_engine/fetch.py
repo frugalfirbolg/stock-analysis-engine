@@ -560,16 +560,37 @@ def fetch(
                     log.warning(f'unable to fetch tdputs={ticker}')
         # td extracts
         
-        ticker_data['daily'] = polygon_daily_df
-        ticker_data['minute'] = polygon_minute_df
-        ticker_data['quote'] = polygon_quote_df
+        if polygon_daily_df:
+            ticker_data['daily'] = polygon_daily_df
+        else:
+            ticker_data['daily'] = iex_daily_df
+        if polygon_minute_df:
+            ticker_data['minute'] = polygon_minute_df
+        else:
+            ticker_data['minute'] = iex_minute_df
+        if polygon_quote_df:
+            ticker_data['quote'] = polygon_quote_df
+        else:
+            ticker_data['quote'] = iex_quote_df
         ticker_data['stats'] = iex_stats_df
         ticker_data['peers'] = iex_peers_df
-        ticker_data['news1'] = polygon_news_df
-        ticker_data['financials'] = polygon_financials_df
+        if polygon_news_df:
+            ticker_data['news1'] = polygon_news_df
+        else:
+            ticker_data['news1'] = iex_news_df
+        if polygon_financials_df:
+            ticker_data['financials'] = polygon_financials_df
+        else:
+            ticker_data['financials'] = iex_financials_df
         ticker_data['earnings'] = iex_earnings_df
-        ticker_data['dividends'] = polygon_dividends_df
-        ticker_data['company'] = polygon_company_df
+        if polygon_dividends_df:
+            ticker_data['dividends'] = polygon_dividends_df
+        else:
+            ticker_data['dividends'] = iex_dividends_df
+        if polygon_company_df:
+            ticker_data['company'] = polygon_company_df
+        else:
+            ticker_data['company'] = iex_company_df
         ticker_data['calls'] = yahoo_option_calls_df
         ticker_data['puts'] = yahoo_option_puts_df
         ticker_data['pricing'] = yahoo_pricing_df
