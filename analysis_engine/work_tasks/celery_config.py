@@ -14,7 +14,7 @@ result_backend = os.getenv(
 # while increasing reliability
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-worker_prefetch_multiplier  # noqa
-worker_prefetch_multiplier = 2
+worker_prefetch_multiplier = 1
 
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_heartbeat  # noqa
 broker_heartbeat = 240  # seconds

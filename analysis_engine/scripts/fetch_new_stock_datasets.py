@@ -562,7 +562,7 @@ def fetch_new_stock_datasets():
         s3_key = f'{symbol}_{backfill_date}'
         redis_key = s3_key
 
-        work['ticker'] = ticker
+        work['ticker'] = symbol
         work['s3_bucket'] = s3_bucket_name
         work['s3_key'] = s3_key
         work['redis_key'] = redis_key
