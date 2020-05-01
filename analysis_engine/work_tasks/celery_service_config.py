@@ -35,6 +35,6 @@ task_publish_retry_policy = {
 task_serializer = 'json'
 result_serializer = 'json'
 accept_content = ['json']
-timezone = 'America/Los_Angeles'
+timezone = 'America/New_York'
 
 task_routes = {}

@@ -96,6 +96,7 @@ import analysis_engine.dataset_scrub_utils as dataset_utils
 import analysis_engine.polygon.consts as polygon_consts
 import analysis_engine.polygon.helpers_for_polygon_api as polygon_helpers
 import spylunking.log.setup_logging as log_utils
+import pytz
 
 log = log_utils.build_colorized_logger(name=__name__)
 
@@ -244,7 +245,7 @@ def fetch_daily(
             from_historical_date = work_dict['from_historical_date']
     
     if use_date is None:
-        use_date = datetime.datetime.today().strftime('%Y-%m-%d')
+        use_date = datetime.datetime.today().astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
 
     if from_historical_date is None:
         from_historical_date = (datetime.datetime.strptime(use_date, '%Y-%m-%d') - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
@@ -337,7 +338,7 @@ def fetch_minute(
             from_historical_date = work_dict['from_historical_date']
     
     if use_date is None:
-        use_date = datetime.datetime.today().strftime('%Y-%m-%d')
+        use_date = datetime.datetime.today().astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
 
     if from_historical_date is None:
         from_historical_date = use_date
