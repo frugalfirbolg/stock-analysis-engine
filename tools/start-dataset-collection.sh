@@ -55,8 +55,13 @@ fi
 for ticker in ${tickers}; do
     echo ""
     s3_key="${ticker}_${use_date}"
-    echo "fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}"
-    fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}
+    if [[ "${BACKFILL_DATE}" != "" ]]; then
+        echo "fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}"
+        fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}
+    else
+        echo "fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}"
+        fetch -t ${ticker} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}
+    fi
 done
 
 date -u +"%Y-%m-%d %H:%M:%S"
