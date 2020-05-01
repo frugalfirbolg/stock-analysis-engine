@@ -30,7 +30,7 @@ else
     if [[ "${DEFAULT_TICKERS}" != "" ]]; then
         # run inside docker or kubernetes with a decoupled engine
         celery_enabled="-Z"
-        tickers="$(echo ${DEFAULT_TICKERS} | sed -e 's/,/ /g')"
+        tickers="$(echo ${DEFAULT_TICKERS})" # | sed -e 's/,/ /g')"
     fi
 fi
 
@@ -53,8 +53,8 @@ if [[ "${DATASET_SOURCES}" != "" ]]; then
 fi
 
 if [[ "${BACKFILL_DATE}" != "" ]]; then
-    echo "fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}"
-    fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}
+    echo "fetch -T ${tickers} -g ${dataset_sources} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}"
+    fetch -T ${tickers} -g ${dataset_sources} -e ${exp_date} ${celery_enabled} -F ${BACKFILL_DATE}
 else
     echo "fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}"
     fetch -T ${tickers} -g ${dataset_sources} -n ${s3_key} -e ${exp_date} ${celery_enabled}
