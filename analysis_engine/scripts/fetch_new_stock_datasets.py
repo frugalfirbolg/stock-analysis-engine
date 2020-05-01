@@ -591,6 +591,21 @@ def fetch_new_stock_datasets():
         work['debug'] = debug
         work['label'] = f'ticker={ticker}'
 
+        app = None
+        if not (ae_consts.is_celery_disabled() or run_offline):
+            # Get the Celery app
+            log.debug(
+                    f'connecting to broker={broker_url} '
+                    f'backend={backend_url}')
+            app = get_celery_app.get_celery_app(
+                name=__name__,
+                auth_url=broker_url,
+                backend_url=backend_url,
+                path_to_config_module=celery_config_module,
+                ssl_options=ssl_options,
+                transport_options=transport_options,
+                include_tasks=include_tasks)
+
         if analysis_type == 'scn':
             label = f'screener={work["ticker"]}'
             fv_urls = []
@@ -669,20 +684,6 @@ def fetch_new_stock_datasets():
                         f'err={task_res["err"]}')
                 # if/else debug
             else:
-                log.debug(
-                    f'connecting to broker={broker_url} '
-                    f'backend={backend_url}')
-
-                # Get the Celery app
-                app = get_celery_app.get_celery_app(
-                    name=__name__,
-                    auth_url=broker_url,
-                    backend_url=backend_url,
-                    path_to_config_module=celery_config_module,
-                    ssl_options=ssl_options,
-                    transport_options=transport_options,
-                    include_tasks=include_tasks)
-
                 log.debug(f'calling task={task_name} - work={ae_consts.ppj(work)}')
                 job_id = app.send_task(
                     task_name,
