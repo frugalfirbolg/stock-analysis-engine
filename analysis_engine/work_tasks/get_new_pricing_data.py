@@ -217,8 +217,11 @@ def get_new_pricing_data(
                 or str_fetch_mode == 'initial'):
             if ae_consts.DATA_PROVIDER == 'polygon':
                 get_polygon_data = True
+                get_iex_data = False
+                get_td_data = False
                 polygon_datasets = ae_consts.POLYGON_INITIAL_DATASETS
             else:
+                get_polygon_data = False
                 get_iex_data = True
                 get_td_data = True
                 iex_datasets = ae_consts.IEX_INITIAL_DATASETS
@@ -227,8 +230,11 @@ def get_new_pricing_data(
                 or str_fetch_mode == 'all'):
             if ae_consts.DATA_PROVIDER == 'polygon':
                 get_polygon_data = True
+                get_iex_data = False
+                get_td_data = False
                 polygon_datasets = ae_consts.POLYGON_DATASETS_DEFAULT
             else:
+                get_polygon_data = False
                 get_iex_data = True
                 get_td_data = True
                 iex_datasets = ae_consts.IEX_DATASETS_DEFAULT
