@@ -44,6 +44,7 @@ import argparse
 from datetime import datetime
 import pytz
 import celery
+from time import sleep
 import analysis_engine.work_tasks.get_celery_app as get_celery_app
 import analysis_engine.consts as ae_consts
 import analysis_engine.iex.consts as iex_consts
@@ -454,6 +455,16 @@ def fetch_new_stock_datasets():
         required=False,
         dest='debug',
         action='store_true')
+    parser.add_argument(
+        '-w',
+        help=(
+            'wait X seconds between tasks '
+            'override environment variable '
+            'TASK_SEND_RATE_LIMIT.'
+        ),
+        required=False,
+        dest='wait_between_task_sends'
+    )
     args = parser.parse_args()
 
     run_offline = True
@@ -489,6 +500,9 @@ def fetch_new_stock_datasets():
     redis_enabled = True
     analysis_type = None
     backfill_date = None
+    # Some infrastructures may need to throttle rate of task creation
+    task_send_rate_limit = os.getenv('TASK_SEND_RATE_LIMIT', None)
+    task_send_rate_limit = float(task_send_rate_limit) if not task_send_rate_limit is None else None
     debug = False
 
     if args.ticker:
@@ -550,6 +564,8 @@ def fetch_new_stock_datasets():
         backfill_date = args.backfill_date
     else:
         backfill_date = datetime.today().astimezone(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d')
+    if args.wait_between_task_sends:
+        task_send_rate_limit = float(args.wait_between_task_sends)
     if args.debug:
         debug = True
 
@@ -689,6 +705,8 @@ def fetch_new_stock_datasets():
                     task_name,
                     (work,))
                 log.debug(f'task={task_name} - job_id={job_id}')
+                if task_send_rate_limit:
+                    sleep(task_send_rate_limit)
             # end of if/else
         # end of supported modes
 # end of fetch_new_stock_datasets
