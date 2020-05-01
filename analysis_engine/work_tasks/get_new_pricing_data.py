@@ -213,7 +213,7 @@ def get_new_pricing_data(
         get_td_data = True
 
         if (
-                fetch_mode == ae_consts.FETCH_MODE_ALL
+                fetch_mode == ae_consts.FETCH_MODE_INITIAL
                 or str_fetch_mode == 'initial'):
             if ae_consts.DATA_PROVIDER == 'polygon':
                 get_polygon_data = True
